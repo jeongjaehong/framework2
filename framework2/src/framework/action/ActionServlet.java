@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import framework.cache.Cache;
+import framework.util.StringUtil;
 
 /** 
  * 컨트롤러 역할을 하는 서블릿으로 모든 클라이언트의 요청을 받아 해당 액션을 실행한다.
@@ -26,7 +28,9 @@ import framework.cache.Cache;
  */
 public class ActionServlet extends HttpServlet {
 	private static final long serialVersionUID = -6478697606075642071L;
-	private static Log _logger = LogFactory.getLog(framework.action.ActionServlet.class);
+	private Log _logger = LogFactory.getLog(framework.action.ActionServlet.class);
+	private final String[] _DEFAULT_SERVLET_NAMES = new String[] { "default", "WorkerServlet", "ResourceServlet", "FileServlet", "resin-file", "SimpleFileServlet", "_ah_default" };
+	private RequestDispatcher _defaultServletDispatcher = null;
 
 	/**
 	 * 서블릿 객체를 초기화 한다.
@@ -39,6 +43,21 @@ public class ActionServlet extends HttpServlet {
 		ResourceBundle bundle = null;
 		try {
 			bundle = ResourceBundle.getBundle(config.getInitParameter("action-mapping"));
+			String defaultServletName = StringUtil.nullToBlankString(config.getInitParameter("default-servlet-name"));
+			if ("".equals(defaultServletName)) {
+				for (String servletName : _DEFAULT_SERVLET_NAMES) {
+					if (getServletContext().getNamedDispatcher(servletName) != null) {
+						defaultServletName = servletName;
+						break;
+					}
+				}
+			}
+			this._defaultServletDispatcher = getServletContext().getNamedDispatcher(defaultServletName);
+			if (this._defaultServletDispatcher == null) {
+				getLogger().info("Default Servlet을 찾을 수 없습니다.");
+			} else {
+				getLogger().info("Default Servlet을 찾았습니다. (" + defaultServletName + ")");
+			}
 		} catch (MissingResourceException e) {
 			throw new ServletException(e);
 		}
@@ -104,33 +123,34 @@ public class ActionServlet extends HttpServlet {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////Private 메소드
-	private void processRequest(HttpServletRequest request, HttpServletResponse response) {
-		String actionKey = getActionKey(request);
-		if (actionKey == null) {
-			getLogger().error("ActionKey are null!");
-			return;
-		}
-		String actionClassName = getActionClass(actionKey);
-		Action action = null;
-		if (actionClassName == null) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-		} else {
-			try {
+	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		try {
+			String actionKey = getActionKey(request);
+			String actionClassName = getActionClass(actionKey);
+			Action action = null;
+			if (actionClassName == null) {
+				throw new PageNotFoundExeption("controller");
+			} else {
 				Class<?> actionClass = Class.forName(actionClassName);
 				action = (Action) actionClass.newInstance();
-			} catch (Exception e) {
-				getLogger().error("Pgm Name : [" + actionKey + "] Bean Create Failed!", e);
-				return;
+				long currTime = 0;
+				if (getLogger().isDebugEnabled()) {
+					currTime = System.currentTimeMillis();
+					getLogger().debug("★★★ " + request.getRemoteAddr() + " 로 부터 \"" + request.getMethod() + " " + request.getRequestURI() + "\" 요청이 시작되었습니다");
+					getLogger().debug("ContentLength : " + request.getContentLength() + "bytes");
+				}
+				action.execute(this, request, response);
+				if (getLogger().isDebugEnabled()) {
+					getLogger().debug("☆☆☆ " + request.getRemoteAddr() + " 로 부터 \"" + request.getMethod() + " " + request.getRequestURI() + "\" 요청이 종료되었습니다 | duration : " + (System.currentTimeMillis() - currTime) + "ms\n");
+				}
 			}
-			long currTime = 0;
-			if (getLogger().isDebugEnabled()) {
-				currTime = System.currentTimeMillis();
-				getLogger().debug("Start [ Pgm : " + actionKey + " | Action : " + actionClassName + " ]");
+		} catch (PageNotFoundExeption e) {
+			if (this._defaultServletDispatcher != null) {
+				this._defaultServletDispatcher.forward(request, response);
 			}
-			action.execute(this, request, response);
-			if (getLogger().isDebugEnabled()) {
-				getLogger().debug("End [ Pgm : " + actionKey + " | Action : " + actionClassName + " ] TIME : " + (System.currentTimeMillis() - currTime) + "ms");
-			}
+		} catch (Exception e) {
+			getLogger().error(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -139,6 +159,8 @@ public class ActionServlet extends HttpServlet {
 		try {
 			return ((String) bundle.getObject(actionKey)).trim();
 		} catch (MissingResourceException e) {
+			getLogger().error("error actionkey is " + actionKey);
+			getLogger().error(e.getMessage());
 			return null;
 		}
 	}
@@ -155,6 +177,6 @@ public class ActionServlet extends HttpServlet {
 	}
 
 	private Log getLogger() {
-		return ActionServlet._logger;
+		return this._logger;
 	}
 }

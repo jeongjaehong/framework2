@@ -30,6 +30,7 @@ public abstract class Action {
 	private Map<String, ConnectionManager> _connMgrMap = new HashMap<String, ConnectionManager>();
 	private HttpServlet _servlet = null;
 	private Box _input = null;
+	private Box _cookies = null;
 	private MultipartBox _multipartInput = null;
 	private PrintWriter _out = null;
 	private HttpServletRequest _request = null;
@@ -46,17 +47,18 @@ public abstract class Action {
 	 * @param servlet 서블릿 객체
 	 * @param request 클라이언트에서 요청된 Request객체
 	 * @param response 클라이언트로 응답할 Response객체
+	 * @throws Exception 
 	 */
-	public void execute(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response) {
+	public void execute(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		setServlet(servlet);
 		setRequest(request);
 		setResponse(response);
+		Method method = getMethod(request.getParameter("action"));
+		if (method == null) {
+			throw new PageNotFoundExeption("action");
+		}
 		try {
-			Method method = getMethod(request.getParameter("action"));
 			method.invoke(this, (Object[]) null);
-		} catch (Exception e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			getLogger().error("Action execute Error!", e);
 		} finally {
 			destroy();
 		}
@@ -97,6 +99,18 @@ public abstract class Action {
 		} catch (Exception e) {
 			getLogger().error("Router Error!", e);
 		}
+	}
+
+	/** 
+	 * 요청을 JSP페이지로 재지향(Redirect) 한다.
+	 * 작성된 JSP페이지는  action.properties에 등록된다.
+	 * <br>
+	 * ex) 키가 search-jsp 인 JSP페이지로 재지향 할 경우 => redirect("search-jsp")
+	 * 
+	 * @param key action.properties 파일에 등록된 JSP 페이지의 키
+	 */
+	protected void redirect(String key) {
+		route(key, false);
 	}
 
 	/** 
@@ -260,6 +274,22 @@ public abstract class Action {
 	}
 
 	/** 
+	 * 쿠키값을 담고 있는 해시테이블을 리턴한다.
+	 * <br>
+	 * ex1) [ name=홍길동 ]인 쿠키를 받아오는 경우 => String name = getCookies().getString("name")
+	 * <br>
+	 * ex2) [ age=20 ]인 쿠키를 받아오는 경우 => Integer age = getCookies().getInteger("age")
+	 *
+	 * @return 쿠키값을 담는 해시테이블
+	 */
+	protected Box getCookies() {
+		if (this._cookies == null) {
+			this._cookies = Box.getBoxFromCookie(getRequest());
+		}
+		return this._cookies;
+	}
+
+	/** 
 	 * 응답객체의 PrintWriter 객체를 리턴한다.
 	 * <br>
 	 * ex) 응답에 Hello World 를 쓰는 경우 => getOut().println("Hello World!")
@@ -364,9 +394,6 @@ public abstract class Action {
 		sb.setCharAt(0, Character.toUpperCase(methodName.charAt(0)));
 		String name = "process" + sb.toString().trim();
 		Method m = getMethod(this.getClass(), name);
-		if (m == null) {
-			throw new IllegalArgumentException("Can not find method named '" + name + "' ");
-		}
 		return m;
 	}
 

@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +52,24 @@ public class MiPlatformUtil {
 	public static int ZLIB_COMP = PlatformRequest.ZLIB_COMP;
 
 	////////////////////////////////////////////////////////////////////////////////////////// RecordSet 이용
+
+	/**
+	 * RecordSet을 마이플랫폼 데이타셋(명칭은 datasetName 인자 값)으로 변환하여 응답객체로 전송한다. MiPlatformUtil.setRecordSet과 동일
+	 * <br>
+	 * ex) rs를 마이플랫폼 데이터셋(명칭은 result)으로 변환하여 response로 XML 형식으로 전송하는 경우 => MiPlatformUtil.render(response, "result", rs, MiPlatformUtil.XML)
+	 * 
+	 * @param response 클라이언트로 응답할 Response 객체
+	 * @param datasetName 데이타셋 이름
+	 * @param rs 마이플랫폼 데이타셋으로 변환할 RecordSet 객체
+	 * @param dataFormat 송수신 형식 (MiPlatformUtil.BIN, MiPlatformUtil.ZLIB_COMP, MiPlatformUtil.XML)
+	 * @return 처리건수
+	 * @throws ColumnNotFoundException 
+	 * @throws IOException 
+	 */
+	public static int render(HttpServletResponse response, String datasetName, RecordSet rs, int dataFormat) throws ColumnNotFoundException, IOException {
+		return setRecordSet(response, datasetName, rs, dataFormat);
+	}
+
 	/**
 	 * RecordSet을 마이플랫폼 데이타셋(명칭은 datasetName 인자 값)으로 변환하여 응답객체로 전송한다.
 	 * <br>
@@ -66,6 +85,23 @@ public class MiPlatformUtil {
 	 */
 	public static int setRecordSet(HttpServletResponse response, String datasetName, RecordSet rs, int dataFormat) throws ColumnNotFoundException, IOException {
 		return setRecordSet(response, new String[] { datasetName }, new RecordSet[] { rs }, dataFormat);
+	}
+
+	/**
+	 * RecordSet을 마이플랫폼 데이타셋(명칭은 datasetNameArray 인자 값)으로 변환하여 응답객체로 전송한다. MiPlatformUtil.setRecordSet과 동일
+	 * <br>
+	 * ex) rs1과 rs2를 마이플랫폼 데이터셋으로 변환하여 response로 XML 형식으로 전송하는 경우 => MiPlatformUtil.render(response, new String[] { "result1", "result2" }, new RecordSet[] { rs1, rs2 }, MiPlatformUtil.XML)
+	 * 
+	 * @param response 클라이언트로 응답할 Response 객체
+	 * @param datasetNameArray 데이타셋 이름 배열
+	 * @param rsArray 마이플랫폼 데이타셋으로 변환할 RecordSet 객체 배열
+	 * @param dataFormat 송수신 형식 (MiPlatformUtil.BIN, MiPlatformUtil.ZLIB_COMP, MiPlatformUtil.XML)
+	 * @return 처리건수
+	 * @throws ColumnNotFoundException 
+	 * @throws IOException 
+	 */
+	public static int render(HttpServletResponse response, String[] datasetNameArray, RecordSet[] rsArray, int dataFormat) throws ColumnNotFoundException, IOException {
+		return setRecordSet(response, datasetNameArray, rsArray, dataFormat);
 	}
 
 	/**
@@ -121,17 +157,28 @@ public class MiPlatformUtil {
 		}
 		String[] colNms = rs.getColumns();
 		int[] colSize = rs.getColumnsSize();
-		rs.moveRow(0); // rs의 위치를 1번째로 이동 
-		int rowCount = 0;
+		int[] colType = rs.getColumnsType();
 		// 컬럼 레이아웃 셋팅
 		for (int c = 0; c < colNms.length; c++) {
-			Object value = rs.get(colNms[c]);
-			if (value instanceof Number) {
+			switch (colType[c]) {
+			case Types.BIGINT:
+			case Types.DECIMAL:
+			case Types.DOUBLE:
+			case Types.FLOAT:
+			case Types.INTEGER:
+			case Types.NUMERIC:
+			case Types.REAL:
+			case Types.SMALLINT:
+			case Types.TINYINT:
 				dSet.addColumn(colNms[c].toLowerCase(), ColumnInfo.COLUMN_TYPE_DECIMAL, colSize[c]);
-			} else {
+				break;
+			default:
 				dSet.addColumn(colNms[c].toLowerCase(), ColumnInfo.COLUMN_TYPE_STRING, colSize[c]);
+				break;
 			}
 		}
+		rs.moveRow(0); // rs의 위치를 1번째로 이동 
+		int rowCount = 0;
 		while (rs.nextRow()) {
 			rowCount++;
 			appendRow(dSet, rs, colNms);
@@ -140,6 +187,24 @@ public class MiPlatformUtil {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////// ResultSet 이용
+
+	/**
+	 * ResultSet을 마이플랫폼 데이타셋(명칭은 datasetName 인자 값)으로 변환하여 응답객체로 전송한다. MiPlatformUtil.setResultSet과 동일
+	 * <br>
+	 * ex) rs를 마이플랫폼 데이터셋(명칭은 result)으로 변환하여 response로 XML 형식으로 전송하는 경우 => MiPlatformUtil.render(response, "result", rs, MiPlatformUtil.XML)
+	 * 
+	 * @param response 클라이언트로 응답할 Response 객체
+	 * @param datasetName 데이타셋 이름
+	 * @param rs 마이플랫폼 데이타셋으로 변환할 ResultSet 객체, ResultSet 객체는 자동으로 close 된다.
+	 * @param dataFormat 송수신 형식 (MiPlatformUtil.BIN, MiPlatformUtil.ZLIB_COMP, MiPlatformUtil.XML)
+	 * @return 처리건수
+	 * @throws IOException 
+	 * @throws SQLException 
+	 */
+	public static int render(HttpServletResponse response, String datasetName, ResultSet rs, int dataFormat) throws IOException, SQLException {
+		return setResultSet(response, datasetName, rs, dataFormat);
+	}
+
 	/**
 	 * ResultSet을 마이플랫폼 데이타셋(명칭은 datasetName 인자 값)으로 변환하여 응답객체로 전송한다.
 	 * <br>
@@ -155,6 +220,23 @@ public class MiPlatformUtil {
 	 */
 	public static int setResultSet(HttpServletResponse response, String datasetName, ResultSet rs, int dataFormat) throws IOException, SQLException {
 		return setResultSet(response, new String[] { datasetName }, new ResultSet[] { rs }, dataFormat);
+	}
+
+	/**
+	 * ResultSet을 마이플랫폼 데이타셋(명칭은 datasetNameArray 인자 값)으로 변환하여 응답객체로 전송한다. MiPlatformUtil.setResultSet과 동일
+	 * <br>
+	 * ex) rs1과 rs2를 마이플랫폼 데이터셋으로 변환하여 response로 XML 형식으로 전송하는 경우 => MiPlatformUtil.render(response, new String[] { "result1", "result2" }, new ResultSet[] { rs1, rs2 }, MiPlatformUtil.XML)
+	 * 
+	 * @param response 클라이언트로 응답할 Response 객체
+	 * @param datasetNameArray 데이타셋 이름 배열
+	 * @param rsArray 마이플랫폼 데이타셋으로 변환할 ResultSet 객체 배열, ResultSet 객체는 자동으로 close 된다.
+	 * @param dataFormat 송수신 형식 (MiPlatformUtil.BIN, MiPlatformUtil.ZLIB_COMP, MiPlatformUtil.XML)
+	 * @return 처리건수
+	 * @throws IOException 
+	 * @throws SQLException 
+	 */
+	public static int render(HttpServletResponse response, String[] datasetNameArray, ResultSet[] rsArray, int dataFormat) throws IOException, SQLException {
+		return setResultSet(response, datasetNameArray, rsArray, dataFormat);
 	}
 
 	/**
@@ -213,22 +295,35 @@ public class MiPlatformUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			int[] colSize = new int[count];
+			int[] colType = new int[count];
 			for (int i = 1; i <= count; i++) {
 				//Table의 Field 가 소문자 인것은 대문자로 변경처리
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 				//Fiels 의 정보 및 Size 추가
 				colSize[i - 1] = rsmd.getColumnDisplaySize(i);
+				// Field 의 타입 추가
+				colType[i - 1] = rsmd.getColumnType(i);
 			}
-			int rowCount = 0;
 			// 컬럼 레이아웃 셋팅
 			for (int c = 0; c < colNms.length; c++) {
-				Object value = rs.getObject(colNms[c]);
-				if (value instanceof Number) {
+				switch (colType[c]) {
+				case Types.BIGINT:
+				case Types.DECIMAL:
+				case Types.DOUBLE:
+				case Types.FLOAT:
+				case Types.INTEGER:
+				case Types.NUMERIC:
+				case Types.REAL:
+				case Types.SMALLINT:
+				case Types.TINYINT:
 					dSet.addColumn(colNms[c].toLowerCase(), ColumnInfo.COLUMN_TYPE_DECIMAL, colSize[c]);
-				} else {
+					break;
+				default:
 					dSet.addColumn(colNms[c].toLowerCase(), ColumnInfo.COLUMN_TYPE_STRING, colSize[c]);
+					break;
 				}
 			}
+			int rowCount = 0;
 			while (rs.next()) {
 				rowCount++;
 				appendRow(dSet, rs, colNms);

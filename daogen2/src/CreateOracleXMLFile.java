@@ -22,6 +22,7 @@ public class CreateOracleXMLFile {
 	private static final String _jdbcUid = "";
 	private static final String _jdbcPw = "";
 	private static List<String> _tableNameList = Arrays.asList(
+			
 	);
 	private static String _filePath = "xml";
 
@@ -102,13 +103,17 @@ public class CreateOracleXMLFile {
 				primaryKeyList.add(rs3.getString("COLUMN_NAME"));
 			}
 		}
+		File dir = new File(_filePath);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
 		File file = new File(_filePath, name + ".xml");
 		if (file.exists()) {
 			file.delete();
 		}
 		FileWriter fw = new FileWriter(file);
 		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write("<?xml version=\"1.0\" encoding=\"EUC-KR\" ?>\n");
+		bw.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
 		bw.write("<table name=\"" + name + "\"  schema=\"" + _jdbcUid + "\" class=\"" + name + "\">\n");
 		bw.write("<description></description>\n");
 		bw.write("<columns>\n");
@@ -130,7 +135,7 @@ public class CreateOracleXMLFile {
 				str.append(" insert=\"SYSDATE\" update=\"none\"");
 			}
 			if (meta.getColumnName(c).equals("UPDATEDATE")) {
-				str.append(" insert=\"SYSDATE\" update=\"SYSDATE\"");
+				str.append(" insert=\"none\" update=\"SYSDATE\"");
 			}
 			if (primaryKeyList.contains(meta.getColumnName(c))) {
 				str.append(" primarykey=\"true\"");

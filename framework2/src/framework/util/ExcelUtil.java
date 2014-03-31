@@ -26,7 +26,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.crypt.Decryptor;
+import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -72,28 +75,92 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * 암호화된 엑셀파일을 파싱한다.
+	 * @param fileItem 파일아이템
+	 * @param password 비밀번호
+	 * @return 데이터의 리스트
+	 * @throws Exception
+	 */
+	public static List<Map<String, String>> parse(FileItem fileItem, String password) throws Exception {
+		String ext = FileUtil.getFileExtension(fileItem.getName());
+		InputStream is = fileItem.getInputStream();
+		if ("xls".equalsIgnoreCase(ext)) {
+			return parseXLS(is, password);
+		} else if ("xlsx".equalsIgnoreCase(ext)) {
+			return parseXLSX(is, password);
+		} else {
+			throw new Exception("지원하지 않는 파일포맷입니다.");
+		}
+	}
+
+	/**
 	 * 확장자에 의해서 엑셀파일을 파싱한다.
 	 * @param file 파일
 	 * @return 데이터의 리스트
 	 * @throws Exception
 	 */
 	public static List<Map<String, String>> parse(File file) throws Exception {
-		String ext = FileUtil.getFileExtension(file);
-		FileInputStream fis = new FileInputStream(file);
-		if ("csv".equalsIgnoreCase(ext)) {
-			return parseCSV(fis);
-		} else if ("tsv".equalsIgnoreCase(ext)) {
-			return parseTSV(fis);
-		} else if ("xls".equalsIgnoreCase(ext)) {
-			return parseXLS(fis);
-		} else if ("xlsx".equalsIgnoreCase(ext)) {
-			return parseXLSX(fis);
-		} else {
-			throw new Exception("지원하지 않는 파일포맷입니다.");
+		FileInputStream fis = null;
+		try {
+			String ext = FileUtil.getFileExtension(file);
+			fis = new FileInputStream(file);
+			if ("csv".equalsIgnoreCase(ext)) {
+				return parseCSV(fis);
+			} else if ("tsv".equalsIgnoreCase(ext)) {
+				return parseTSV(fis);
+			} else if ("xls".equalsIgnoreCase(ext)) {
+				return parseXLS(fis);
+			} else if ("xlsx".equalsIgnoreCase(ext)) {
+				return parseXLSX(fis);
+			} else {
+				throw new Exception("지원하지 않는 파일포맷입니다.");
+			}
+		} finally {
+			if (fis != null) {
+				fis.close();
+			}
+		}
+	}
+
+	/**
+	 * 암호화된 엑셀파일을 파싱한다.
+	 * @param file 파일
+	 * @return 데이터의 리스트
+	 * @throws Exception
+	 */
+	public static List<Map<String, String>> parse(File file, String password) throws Exception {
+		FileInputStream fis = null;
+		try {
+			String ext = FileUtil.getFileExtension(file);
+			fis = new FileInputStream(file);
+			if ("xls".equalsIgnoreCase(ext)) {
+				return parseXLS(fis, password);
+			} else if ("xlsx".equalsIgnoreCase(ext)) {
+				return parseXLSX(fis, password);
+			} else {
+				throw new Exception("지원하지 않는 파일포맷입니다.");
+			}
+		} finally {
+			if (fis != null) {
+				fis.close();
+			}
 		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////// RecordSet 이용
+
+	/**
+	 * RecordSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetXLS과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws ColumnNotFoundException
+	 * @throws IOException
+	 */
+	public static int renderXLS(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
+		return setRecordSetXLS(response, rs, fileName);
+	}
 
 	/**
 	 * RecordSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다.
@@ -153,6 +220,19 @@ public class ExcelUtil {
 		workbook.write(fos);
 		fos.close();
 		return rowCount;
+	}
+
+	/**
+	 * RecordSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetXLSX과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws ColumnNotFoundException
+	 * @throws IOException
+	 */
+	public static int renderXLSX(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
+		return setRecordSetXLSX(response, rs, fileName);
 	}
 
 	/**
@@ -216,6 +296,19 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * RecordSet을 CSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetCSV과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws ColumnNotFoundException
+	 * @throws IOException
+	 */
+	public static int renderCSV(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
+		return setRecordSetCSV(response, rs, fileName);
+	}
+
+	/**
 	 * RecordSet을 CSV 형식으로 변환하여 응답객체로 전송한다.
 	 * @param response
 	 * @param rs
@@ -241,6 +334,19 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * RecordSet을 TSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetTSV과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws ColumnNotFoundException
+	 * @throws IOException
+	 */
+	public static int renderTSV(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
+		return setRecordSetTSV(response, rs, fileName);
+	}
+
+	/**
 	 * RecordSet을 TSV 형식으로 변환하여 응답객체로 전송한다.
 	 * @param response
 	 * @param rs
@@ -263,6 +369,23 @@ public class ExcelUtil {
 	 */
 	public static int writeTSV(File file, RecordSet rs) throws IOException, ColumnNotFoundException {
 		return writeSep(file, rs, "\t");
+	}
+
+	/**
+	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 출력한다. ExcelUtil.setRecordSetSep과 동일
+	 * <br>
+	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우 => ExcelUtil.renderSep(response, rs, ",")
+	 * 
+	 * @param response 클라이언트로 응답할 Response 객체
+	 * @param rs 구분자(CSV, TSV 등)파일 형식으로 변환할 RecordSet 객체
+	 * @param fileName
+	 * @param sep 열 구분자로 쓰일 문자열
+	 * @return 처리건수
+	 * @throws ColumnNotFoundException 
+	 * @throws IOException 
+	 */
+	public static int renderSep(HttpServletResponse response, RecordSet rs, String fileName, String sep) throws ColumnNotFoundException, IOException {
+		return setRecordSetSep(response, rs, fileName, sep);
 	}
 
 	/**
@@ -327,6 +450,21 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
+	 * <br>
+	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(rs, ",")
+	 * 
+	 * @param rs 변환할 RecordSet 객체
+	 * @param sep 열 구분자로 쓰일 문자열
+	 * 
+	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
+	 * @throws ColumnNotFoundException 
+	 */
+	public static String renderSep(RecordSet rs, String sep) throws ColumnNotFoundException {
+		return formatSep(rs, sep);
+	}
+
+	/**
 	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다.
 	 * <br>
 	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.formatSep(rs, ",")
@@ -355,6 +493,19 @@ public class ExcelUtil {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////// ResultSet 이용
+
+	/**
+	 * ResultSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetXLS과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public static int renderXLS(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
+		return setResultSetXLS(response, rs, fileName);
+	}
 
 	/**
 	 * ResultSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다.
@@ -441,6 +592,19 @@ public class ExcelUtil {
 			if (stmt != null)
 				stmt.close();
 		}
+	}
+
+	/**
+	 * ResultSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetXLSX과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public static int renderXLSX(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
+		return setResultSetXLSX(response, rs, fileName);
 	}
 
 	/**
@@ -531,6 +695,19 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * ResultSet을 CSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetCSV과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public static int renderCSV(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
+		return setResultSetCSV(response, rs, fileName);
+	}
+
+	/**
 	 * ResultSet을 CSV 형식으로 변환하여 응답객체로 전송한다.
 	 * @param response
 	 * @param rs
@@ -556,6 +733,19 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * ResultSet을 TSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetTSV과 동일
+	 * @param response
+	 * @param rs
+	 * @param fileName
+	 * @return 처리건수
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public static int renderTSV(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
+		return setResultSetTSV(response, rs, fileName);
+	}
+
+	/**
 	 * ResultSet을 TSV 형식으로 변환하여 응답객체로 전송한다.
 	 * @param response
 	 * @param rs
@@ -578,6 +768,23 @@ public class ExcelUtil {
 	 */
 	public static int writeTSV(File file, ResultSet rs) throws IOException, SQLException {
 		return writeSep(file, rs, "\t");
+	}
+
+	/**
+	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 출력한다. ExcelUtil.setResultSetSep과 동일
+	 * <br>
+	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우 => ExcelUtil.renderSep(response, rs, ",")
+	 * 
+	 * @param response 클라이언트로 응답할 Response 객체
+	 * @param rs 구분자(CSV, TSV 등)파일 형식으로 변환할 ResultSet 객체, ResultSet 객체는 자동으로 close 된다.
+	 * @param fileName
+	 * @param sep 열 구분자로 쓰일 문자열
+	 * @return 처리건수
+	 * @throws SQLException 
+	 * @throws IOException 
+	 */
+	public static int renderSep(HttpServletResponse response, ResultSet rs, String fileName, String sep) throws SQLException, IOException {
+		return setResultSetSep(response, rs, fileName, sep);
 	}
 
 	/**
@@ -669,6 +876,21 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
+	 * <br>
+	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(rs, ",")
+	 * 
+	 * @param rs 변환할 ResultSet 객체, ResultSet 객체는 자동으로 close 된다.
+	 * @param sep 열 구분자로 쓰일 문자열
+	 * 
+	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
+	 * @throws SQLException 
+	 */
+	public static String renderSep(ResultSet rs, String sep) throws SQLException {
+		return formatSep(rs, sep);
+	}
+
+	/**
 	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다.
 	 * <br>
 	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.formatSep(rs, ",")
@@ -712,6 +934,20 @@ public class ExcelUtil {
 	////////////////////////////////////////////////////////////////////////////////////////// 기타 Collection 이용
 
 	/**
+	 * Map객체를 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
+	 * <br>
+	 * ex) map을 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(map, ",")
+	 *
+	 * @param map 변환할 Map객체
+	 * @param sep 열 구분자로 쓰일 문자열
+	 *
+	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
+	 */
+	public static String renderSep(Map<String, Object> map, String sep) {
+		return formatSep(map, sep);
+	}
+
+	/**
 	 * Map객체를 구분자(CSV, TSV 등)파일 형식으로 변환한다.
 	 * <br>
 	 * ex) map을 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.formatSep(map, ",")
@@ -728,6 +964,20 @@ public class ExcelUtil {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(sepRowStr(map, sep));
 		return buffer.toString();
+	}
+
+	/**
+	 * List객체를 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
+	 * <br>
+	 * ex1) mapList를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(mapList, ",")
+	 *
+	 * @param mapList 변환할 List객체
+	 * @param sep 열 구분자로 쓰일 문자열
+	 *
+	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
+	 */
+	public static String renderSep(List<Map<String, Object>> mapList, String sep) {
+		return formatSep(mapList, sep);
 	}
 
 	/**
@@ -921,11 +1171,42 @@ public class ExcelUtil {
 	/**
 	 * 
 	 * @param is 입력스트림
+	 * @param password 비밀번호
+	 * @return 데이터의 리스트
+	 * @throws Exception
+	 */
+	private static List<Map<String, String>> parseXLS(InputStream is, String password) throws Exception {
+		POIFSFileSystem poiFileSystem = new POIFSFileSystem(is);
+		Biff8EncryptionKey.setCurrentUserPassword(password);
+		HSSFWorkbook workbook = new HSSFWorkbook(poiFileSystem);
+		Biff8EncryptionKey.setCurrentUserPassword(null);
+		return parseSheet(workbook.getSheetAt(0));
+	}
+
+	/**
+	 * 
+	 * @param is 입력스트림
 	 * @return 데이터의 리스트
 	 * @throws Exception
 	 */
 	private static List<Map<String, String>> parseXLSX(InputStream is) throws Exception {
 		XSSFWorkbook workbook = new XSSFWorkbook(is);
+		return parseSheet(workbook.getSheetAt(0));
+	}
+
+	/**
+	 * 
+	 * @param is 입력스트림
+	 * @param password 비밀번호
+	 * @return 데이터의 리스트
+	 * @throws Exception
+	 */
+	private static List<Map<String, String>> parseXLSX(InputStream is, String password) throws Exception {
+		POIFSFileSystem fs = new POIFSFileSystem(is);
+		EncryptionInfo info = new EncryptionInfo(fs);
+		Decryptor d = new Decryptor(info);
+		d.verifyPassword(password);
+		XSSFWorkbook workbook = new XSSFWorkbook(d.getDataStream(fs));
 		return parseSheet(workbook.getSheetAt(0));
 	}
 
