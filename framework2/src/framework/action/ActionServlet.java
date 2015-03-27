@@ -28,9 +28,7 @@ import framework.util.StringUtil;
  */
 public class ActionServlet extends HttpServlet {
 	private static final long serialVersionUID = -6478697606075642071L;
-	private Log _logger = LogFactory.getLog(framework.action.ActionServlet.class);
-	private final String[] _DEFAULT_SERVLET_NAMES = new String[] { "default", "WorkerServlet", "ResourceServlet", "FileServlet", "resin-file", "SimpleFileServlet", "_ah_default" };
-	private RequestDispatcher _defaultServletDispatcher = null;
+	private final Log _logger = LogFactory.getLog(framework.action.ActionServlet.class);
 
 	/**
 	 * 서블릿 객체를 초기화 한다.
@@ -41,6 +39,7 @@ public class ActionServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		ResourceBundle bundle = null;
+		String[] _DEFAULT_SERVLET_NAMES = new String[] { "default", "WorkerServlet", "ResourceServlet", "FileServlet", "resin-file", "SimpleFileServlet", "_ah_default" };
 		try {
 			bundle = ResourceBundle.getBundle(config.getInitParameter("action-mapping"));
 			String defaultServletName = StringUtil.nullToBlankString(config.getInitParameter("default-servlet-name"));
@@ -52,10 +51,11 @@ public class ActionServlet extends HttpServlet {
 					}
 				}
 			}
-			this._defaultServletDispatcher = getServletContext().getNamedDispatcher(defaultServletName);
-			if (this._defaultServletDispatcher == null) {
+			RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(defaultServletName);
+			if (dispatcher == null) {
 				getLogger().info("Default Servlet을 찾을 수 없습니다.");
 			} else {
+				getServletContext().setAttribute("default-servlet-dispatcher", dispatcher);
 				getLogger().info("Default Servlet을 찾았습니다. (" + defaultServletName + ")");
 			}
 		} catch (MissingResourceException e) {
@@ -145,9 +145,11 @@ public class ActionServlet extends HttpServlet {
 				}
 			}
 		} catch (PageNotFoundExeption e) {
-			if (this._defaultServletDispatcher != null) {
-				this._defaultServletDispatcher.forward(request, response);
+			RequestDispatcher dispatcher = (RequestDispatcher) getServletContext().getAttribute("default-servlet-dispatcher");
+			if (dispatcher != null) {
+				dispatcher.forward(request, response);
 			}
+			return;
 		} catch (Exception e) {
 			getLogger().error(e);
 			throw new RuntimeException(e);
