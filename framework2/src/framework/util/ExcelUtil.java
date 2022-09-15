@@ -17,7 +17,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -61,7 +64,7 @@ public class ExcelUtil {
 	 * 확장자에 의해서 엑셀파일을 파싱한다.
 	 * @param fileItem 파일아이템
 	 * @return 데이터의 리스트
-	 * @throws Exception
+	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(FileItem fileItem) throws Exception {
 		String ext = FileUtil.getFileExtension(fileItem.getName());
@@ -84,7 +87,7 @@ public class ExcelUtil {
 	 * @param fileItem 파일아이템
 	 * @param password 비밀번호
 	 * @return 데이터의 리스트
-	 * @throws Exception
+	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(FileItem fileItem, String password) throws Exception {
 		String ext = FileUtil.getFileExtension(fileItem.getName());
@@ -102,7 +105,7 @@ public class ExcelUtil {
 	 * 확장자에 의해서 엑셀파일을 파싱한다.
 	 * @param file 파일
 	 * @return 데이터의 리스트
-	 * @throws Exception
+	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(File file) throws Exception {
 		FileInputStream fis = null;
@@ -130,8 +133,9 @@ public class ExcelUtil {
 	/**
 	 * 암호화된 엑셀파일을 파싱한다.
 	 * @param file 파일
+	 * @param password 패스워드
 	 * @return 데이터의 리스트
-	 * @throws Exception
+	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(File file, String password) throws Exception {
 		FileInputStream fis = null;
@@ -156,12 +160,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetXLS과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLS(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetXLS(response, rs, fileName, null);
@@ -169,13 +173,13 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetXLS과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLS(HttpServletResponse response, RecordSet rs, String fileName, String[] header) throws ColumnNotFoundException, IOException {
 		return setRecordSetXLS(response, rs, fileName, header);
@@ -183,12 +187,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int setRecordSetXLS(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetXLS(response, rs, fileName, null);
@@ -196,13 +200,13 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int setRecordSetXLS(HttpServletResponse response, RecordSet rs, String fileName, String[] header) throws ColumnNotFoundException, IOException {
 		if (rs == null) {
@@ -240,11 +244,11 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2003 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs RecordSet
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLS(File file, RecordSet rs) throws ColumnNotFoundException, IOException {
 		return writeXLS(file, rs, null);
@@ -252,12 +256,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2003 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
-	 * @param header
+	 * @param file 파일
+	 * @param rs RecordSet
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLS(File file, RecordSet rs, String[] header) throws ColumnNotFoundException, IOException {
 		if (rs == null) {
@@ -292,12 +296,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetXLSX과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLSX(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetXLSX(response, rs, fileName, null);
@@ -305,13 +309,13 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetXLSX과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLSX(HttpServletResponse response, RecordSet rs, String fileName, String[] header) throws ColumnNotFoundException, IOException {
 		return setRecordSetXLSX(response, rs, fileName, header);
@@ -319,12 +323,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int setRecordSetXLSX(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetXLSX(response, rs, fileName, null);
@@ -332,13 +336,13 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int setRecordSetXLSX(HttpServletResponse response, RecordSet rs, String fileName, String[] header) throws ColumnNotFoundException, IOException {
 		if (rs == null) {
@@ -376,11 +380,11 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2007 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs RecordSet
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLSX(File file, RecordSet rs) throws ColumnNotFoundException, IOException {
 		return writeXLSX(file, rs, null);
@@ -388,12 +392,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 엑셀2007 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
-	 * @param header
+	 * @param file 파일
+	 * @param rs RecordSet
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLSX(File file, RecordSet rs, String[] header) throws ColumnNotFoundException, IOException {
 		if (rs == null) {
@@ -428,12 +432,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 CSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetCSV과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int renderCSV(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetCSV(response, rs, fileName);
@@ -441,12 +445,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 CSV 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int setRecordSetCSV(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetSep(response, rs, fileName, ",");
@@ -454,11 +458,11 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 CSV 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs RecordSet
 	 * @return 처리건수
-	 * @throws IOException
-	 * @throws ColumnNotFoundException
+	 * @throws IOException IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public static int writeCSV(File file, RecordSet rs) throws IOException, ColumnNotFoundException {
 		return writeSep(file, rs, ",");
@@ -466,12 +470,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 TSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setRecordSetTSV과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int renderTSV(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetTSV(response, rs, fileName);
@@ -479,12 +483,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 TSV 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs RecordSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException
-	 * @throws IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int setRecordSetTSV(HttpServletResponse response, RecordSet rs, String fileName) throws ColumnNotFoundException, IOException {
 		return setRecordSetSep(response, rs, fileName, "\t");
@@ -492,11 +496,11 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 TSV 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs RecordSet
 	 * @return 처리건수
-	 * @throws IOException
-	 * @throws ColumnNotFoundException
+	 * @throws IOException IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public static int writeTSV(File file, RecordSet rs) throws IOException, ColumnNotFoundException {
 		return writeSep(file, rs, "\t");
@@ -505,15 +509,15 @@ public class ExcelUtil {
 	/**
 	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 출력한다. ExcelUtil.setRecordSetSep과 동일
 	 * <br>
-	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우 => ExcelUtil.renderSep(response, rs, ",")
-	 * 
+	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우: ExcelUtil.renderSep(response, rs, ",")
+	 *
 	 * @param response 클라이언트로 응답할 Response 객체
 	 * @param rs 구분자(CSV, TSV 등)파일 형식으로 변환할 RecordSet 객체
-	 * @param fileName
+	 * @param fileName 파일명
 	 * @param sep 열 구분자로 쓰일 문자열
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException 
-	 * @throws IOException 
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int renderSep(HttpServletResponse response, RecordSet rs, String fileName, String sep) throws ColumnNotFoundException, IOException {
 		return setRecordSetSep(response, rs, fileName, sep);
@@ -522,15 +526,15 @@ public class ExcelUtil {
 	/**
 	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 출력한다.
 	 * <br>
-	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우 => ExcelUtil.setRecordSetSep(response, rs, ",")
-	 * 
+	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우: ExcelUtil.setRecordSetSep(response, rs, ",")
+	 *
 	 * @param response 클라이언트로 응답할 Response 객체
 	 * @param rs 구분자(CSV, TSV 등)파일 형식으로 변환할 RecordSet 객체
-	 * @param fileName
+	 * @param fileName 파일명
 	 * @param sep 열 구분자로 쓰일 문자열
 	 * @return 처리건수
-	 * @throws ColumnNotFoundException 
-	 * @throws IOException 
+	 * @throws ColumnNotFoundException ColumnNotFoundException
+	 * @throws IOException IOException
 	 */
 	public static int setRecordSetSep(HttpServletResponse response, RecordSet rs, String fileName, String sep) throws ColumnNotFoundException, IOException {
 		if (rs == null) {
@@ -555,12 +559,12 @@ public class ExcelUtil {
 
 	/**
 	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 파일로 저장한다.
-	 * @param file
-	 * @param rs
-	 * @param sep
+	 * @param file 파일
+	 * @param rs RecordSet
+	 * @param sep 구분자
 	 * @return 처리건수
-	 * @throws IOException
-	 * @throws ColumnNotFoundException
+	 * @throws IOException IOException
+	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public static int writeSep(File file, RecordSet rs, String sep) throws IOException, ColumnNotFoundException {
 		if (rs == null) {
@@ -583,13 +587,13 @@ public class ExcelUtil {
 	/**
 	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
 	 * <br>
-	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(rs, ",")
-	 * 
+	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.renderSep(rs, ",")
+	 *
 	 * @param rs 변환할 RecordSet 객체
 	 * @param sep 열 구분자로 쓰일 문자열
-	 * 
+	 *
 	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
-	 * @throws ColumnNotFoundException 
+	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public static String renderSep(RecordSet rs, String sep) throws ColumnNotFoundException {
 		return formatSep(rs, sep);
@@ -598,13 +602,13 @@ public class ExcelUtil {
 	/**
 	 * RecordSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다.
 	 * <br>
-	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.formatSep(rs, ",")
-	 * 
+	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.formatSep(rs, ",")
+	 *
 	 * @param rs 변환할 RecordSet 객체
 	 * @param sep 열 구분자로 쓰일 문자열
-	 * 
+	 *
 	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
-	 * @throws ColumnNotFoundException 
+	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public static String formatSep(RecordSet rs, String sep) throws ColumnNotFoundException {
 		if (rs == null) {
@@ -627,12 +631,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetXLS과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLS(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetXLS(response, rs, fileName, null);
@@ -640,13 +644,13 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetXLS과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLS(HttpServletResponse response, ResultSet rs, String fileName, String[] header) throws SQLException, IOException {
 		return setResultSetXLS(response, rs, fileName, header);
@@ -654,12 +658,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int setResultSetXLS(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetXLS(response, rs, fileName, null);
@@ -667,13 +671,13 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2003 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int setResultSetXLS(HttpServletResponse response, ResultSet rs, String fileName, String[] header) throws SQLException, IOException {
 		if (rs == null) {
@@ -724,11 +728,11 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2003 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs ResultSet
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLS(File file, ResultSet rs) throws SQLException, IOException {
 		return writeXLS(file, rs, null);
@@ -736,12 +740,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2003 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
-	 * @param header
+	 * @param file 파일
+	 * @param rs ResultSet
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLS(File file, ResultSet rs, String[] header) throws SQLException, IOException {
 		if (rs == null) {
@@ -790,12 +794,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetXLSX과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLSX(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetXLSX(response, rs, fileName, null);
@@ -803,13 +807,13 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetXLSX과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int renderXLSX(HttpServletResponse response, ResultSet rs, String fileName, String[] header) throws SQLException, IOException {
 		return setResultSetXLSX(response, rs, fileName, header);
@@ -817,12 +821,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int setResultSetXLSX(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetXLSX(response, rs, fileName, null);
@@ -830,13 +834,13 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2007 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
-	 * @param header
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int setResultSetXLSX(HttpServletResponse response, ResultSet rs, String fileName, String[] header) throws SQLException, IOException {
 		if (rs == null) {
@@ -887,11 +891,11 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2007 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs ResultSet
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLSX(File file, ResultSet rs) throws SQLException, IOException {
 		return writeXLSX(file, rs, null);
@@ -899,12 +903,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 엑셀2007 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
-	 * @param header
+	 * @param file 파일
+	 * @param rs ResultSet
+	 * @param header 헤더
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int writeXLSX(File file, ResultSet rs, String[] header) throws SQLException, IOException {
 		if (rs == null) {
@@ -953,12 +957,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 CSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetCSV과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int renderCSV(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetCSV(response, rs, fileName);
@@ -966,12 +970,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 CSV 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int setResultSetCSV(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetSep(response, rs, fileName, ",");
@@ -979,11 +983,11 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 CSV 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs ResultSet
 	 * @return 처리건수
-	 * @throws IOException
-	 * @throws SQLException
+	 * @throws IOException IOException
+	 * @throws SQLException SQLException
 	 */
 	public static int writeCSV(File file, ResultSet rs) throws IOException, SQLException {
 		return writeSep(file, rs, ",");
@@ -991,12 +995,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 TSV 형식으로 변환하여 응답객체로 전송한다. ExcelUtil.setResultSetTSV과 동일
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int renderTSV(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetTSV(response, rs, fileName);
@@ -1004,12 +1008,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 TSV 형식으로 변환하여 응답객체로 전송한다.
-	 * @param response
-	 * @param rs
-	 * @param fileName
+	 * @param response 응답객체
+	 * @param rs ResultSet
+	 * @param fileName 파일명
 	 * @return 처리건수
-	 * @throws SQLException
-	 * @throws IOException
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int setResultSetTSV(HttpServletResponse response, ResultSet rs, String fileName) throws SQLException, IOException {
 		return setResultSetSep(response, rs, fileName, "\t");
@@ -1017,11 +1021,11 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 TSV 형식으로 변환하여 파일로 저장한다.
-	 * @param file
-	 * @param rs
+	 * @param file 파일
+	 * @param rs ResultSet
 	 * @return 처리건수
-	 * @throws IOException
-	 * @throws SQLException
+	 * @throws IOException IOException
+	 * @throws SQLException SQLException
 	 */
 	public static int writeTSV(File file, ResultSet rs) throws IOException, SQLException {
 		return writeSep(file, rs, "\t");
@@ -1030,15 +1034,15 @@ public class ExcelUtil {
 	/**
 	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 출력한다. ExcelUtil.setResultSetSep과 동일
 	 * <br>
-	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우 => ExcelUtil.renderSep(response, rs, ",")
-	 * 
+	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우: ExcelUtil.renderSep(response, rs, ",")
+	 *
 	 * @param response 클라이언트로 응답할 Response 객체
 	 * @param rs 구분자(CSV, TSV 등)파일 형식으로 변환할 ResultSet 객체, ResultSet 객체는 자동으로 close 된다.
-	 * @param fileName
+	 * @param fileName 파일명
 	 * @param sep 열 구분자로 쓰일 문자열
 	 * @return 처리건수
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int renderSep(HttpServletResponse response, ResultSet rs, String fileName, String sep) throws SQLException, IOException {
 		return setResultSetSep(response, rs, fileName, sep);
@@ -1047,15 +1051,15 @@ public class ExcelUtil {
 	/**
 	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 출력한다.
 	 * <br>
-	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우 => ExcelUtil.setResultSetSep(response, rs, ",")
-	 * 
+	 * ex) response로 rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 출력하는 경우: ExcelUtil.setResultSetSep(response, rs, ",")
+	 *
 	 * @param response 클라이언트로 응답할 Response 객체
 	 * @param rs 구분자(CSV, TSV 등)파일 형식으로 변환할 ResultSet 객체, ResultSet 객체는 자동으로 close 된다.
-	 * @param fileName
+	 * @param fileName 파일명
 	 * @param sep 열 구분자로 쓰일 문자열
 	 * @return 처리건수
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * @throws SQLException SQLException
+	 * @throws IOException IOException
 	 */
 	public static int setResultSetSep(HttpServletResponse response, ResultSet rs, String fileName, String sep) throws SQLException, IOException {
 		if (rs == null) {
@@ -1093,12 +1097,12 @@ public class ExcelUtil {
 
 	/**
 	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 파일로 저장한다.
-	 * @param file
-	 * @param rs
-	 * @param sep
+	 * @param file 파일
+	 * @param rs ResultSet
+	 * @param sep 구분자
 	 * @return 처리건수
-	 * @throws IOException
-	 * @throws SQLException
+	 * @throws IOException IOException
+	 * @throws SQLException SQLException
 	 */
 	public static int writeSep(File file, ResultSet rs, String sep) throws IOException, SQLException {
 		if (rs == null) {
@@ -1135,13 +1139,13 @@ public class ExcelUtil {
 	/**
 	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
 	 * <br>
-	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(rs, ",")
-	 * 
+	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.renderSep(rs, ",")
+	 *
 	 * @param rs 변환할 ResultSet 객체, ResultSet 객체는 자동으로 close 된다.
 	 * @param sep 열 구분자로 쓰일 문자열
-	 * 
+	 *
 	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
-	 * @throws SQLException 
+	 * @throws SQLException SQLException
 	 */
 	public static String renderSep(ResultSet rs, String sep) throws SQLException {
 		return formatSep(rs, sep);
@@ -1150,13 +1154,13 @@ public class ExcelUtil {
 	/**
 	 * ResultSet을 구분자(CSV, TSV 등)파일 형식으로 변환한다.
 	 * <br>
-	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.formatSep(rs, ",")
-	 * 
+	 * ex) rs를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.formatSep(rs, ",")
+	 *
 	 * @param rs 변환할 ResultSet 객체, ResultSet 객체는 자동으로 close 된다.
 	 * @param sep 열 구분자로 쓰일 문자열
-	 * 
+	 *
 	 * @return 구분자(CSV, TSV 등)파일 형식으로 변환된 문자열
-	 * @throws SQLException 
+	 * @throws SQLException SQLException
 	 */
 	public static String formatSep(ResultSet rs, String sep) throws SQLException {
 		if (rs == null) {
@@ -1193,7 +1197,7 @@ public class ExcelUtil {
 	/**
 	 * Map객체를 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
 	 * <br>
-	 * ex) map을 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(map, ",")
+	 * ex) map을 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.renderSep(map, ",")
 	 *
 	 * @param map 변환할 Map객체
 	 * @param sep 열 구분자로 쓰일 문자열
@@ -1207,7 +1211,7 @@ public class ExcelUtil {
 	/**
 	 * Map객체를 구분자(CSV, TSV 등)파일 형식으로 변환한다.
 	 * <br>
-	 * ex) map을 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.formatSep(map, ",")
+	 * ex) map을 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.formatSep(map, ",")
 	 *
 	 * @param map 변환할 Map객체
 	 * @param sep 열 구분자로 쓰일 문자열
@@ -1226,7 +1230,7 @@ public class ExcelUtil {
 	/**
 	 * List객체를 구분자(CSV, TSV 등)파일 형식으로 변환한다. ExcelUtil.formatSep과 동일
 	 * <br>
-	 * ex1) mapList를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.renderSep(mapList, ",")
+	 * ex1) mapList를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.renderSep(mapList, ",")
 	 *
 	 * @param mapList 변환할 List객체
 	 * @param sep 열 구분자로 쓰일 문자열
@@ -1240,7 +1244,7 @@ public class ExcelUtil {
 	/**
 	 * List객체를 구분자(CSV, TSV 등)파일 형식으로 변환한다.
 	 * <br>
-	 * ex1) mapList를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우 => String csv = ExcelUtil.formatSep(mapList, ",")
+	 * ex1) mapList를 열구분자 콤마(,) 인 구분자(CSV, TSV 등)파일 형식으로 변환하는 경우: String csv = ExcelUtil.formatSep(mapList, ",")
 	 *
 	 * @param mapList 변환할 List객체
 	 * @param sep 열 구분자로 쓰일 문자열
@@ -1266,9 +1270,10 @@ public class ExcelUtil {
 
 	/**
 	 * 구분자로 쓰이는 문자열 또는 개행문자가 값에 포함되어 있을 경우 값을 쌍따옴표로 둘러싸도록 변환한다.
-	 * 
+	 *
 	 * @param str 변환할 문자열
 	 * @param sep 열 구분자로 쓰일 문자열
+	 * @return escape 된 문자열
 	 */
 	public static String escapeSep(String str, String sep) {
 		if (str == null) {
@@ -1308,7 +1313,7 @@ public class ExcelUtil {
 	/**
 	 * 구분자(CSV, TSV 등)파일 생성용 Row 문자열 생성
 	 * 데이타가 숫자가 아닐때에는 구분자로 쓰인 문자열 또는 개행문자를 escape 하기 위해 값을 쌍따옴표로 둘러싼다.
-	 * @throws ColumnNotFoundException 
+	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	private static String sepRowStr(RecordSet rs, String[] colNms, String sep) throws ColumnNotFoundException {
 		StringBuilder buffer = new StringBuilder();
@@ -1334,7 +1339,7 @@ public class ExcelUtil {
 	/**
 	 * 구분자(CSV, TSV 등)파일 생성용 Row 문자열 생성
 	 * 데이타가 숫자가 아닐때에는 구분자로 쓰인 문자열 또는 개행문자를 escape 하기 위해 값을 쌍따옴표로 둘러싼다.
-	 * @throws SQLException
+	 * @throws SQLException SQLException
 	 */
 	private static String sepRowStr(ResultSet rs, String[] colNms, String sep) throws SQLException {
 		StringBuilder buffer = new StringBuilder();
@@ -1470,43 +1475,48 @@ public class ExcelUtil {
 	 * 엑셀 시트의 데이터 파싱하여 맵의 리스트로 리턴
 	 * @param sheet 엑셀 워크시트
 	 * @return 데이터를 가지고 있는 맵의 리스트
-	 * @throws Exception
+	 * @throws Exception Exception
 	 */
 	private static List<Map<String, String>> parseSheet(Sheet sheet) throws Exception {
 		List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		int rowCount = sheet.getPhysicalNumberOfRows();
 		int colCount = sheet.getRow(0).getPhysicalNumberOfCells();
 		for (int i = 0; i < rowCount; i++) {
 			Row row = sheet.getRow(i);
-			Map<String, String> map = new HashMap<String, String>();
-			for (int j = 0; j < colCount; j++) {
-				Cell cell = row.getCell(j);
-				String item = "";
-				if (cell == null) {
-					item = "";
-				} else {
-					switch (cell.getCellType()) {
-					case Cell.CELL_TYPE_ERROR:
-						throw new Exception("EXCEL에 수식 에러가 포함되어 있어 분석에 실패하였습니다.");
-					case Cell.CELL_TYPE_FORMULA:
-						throw new Exception("EXCEL에 수식이 포함되어 있어 분석에 실패하였습니다.");
-					case Cell.CELL_TYPE_NUMERIC:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						item = cell.getStringCellValue();
-						break;
-					case Cell.CELL_TYPE_STRING:
-						item = cell.getStringCellValue();
-						break;
+			if (row != null) {
+				Map<String, String> map = new HashMap<String, String>();
+				for (int j = 0; j < colCount; j++) {
+					Cell cell = row.getCell(j);
+					String item = "";
+					if (cell != null) {
+						switch (cell.getCellType()) {
+						case Cell.CELL_TYPE_BOOLEAN:
+						case Cell.CELL_TYPE_FORMULA:
+						case Cell.CELL_TYPE_STRING:
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+							item = cell.getStringCellValue();
+							break;
+						case Cell.CELL_TYPE_NUMERIC:
+							if (DateUtil.isCellDateFormatted(cell)) {
+								Date date = cell.getDateCellValue();
+								item = dateFormat.format(date);
+							} else {
+								cell.setCellType(Cell.CELL_TYPE_STRING);
+								item = cell.getStringCellValue();
+							}
+							break;
+						}
 					}
+					map.put(String.valueOf(j), item);
 				}
-				map.put(String.valueOf(j), item);
+				mapList.add(map);
 			}
-			mapList.add(map);
 		}
 		return mapList;
 	}
 
-	/** 
+	/**
 	 * 헤더 셀 스타일 리턴
 	 */
 	private static CellStyle headerStyle(Workbook workbook) {
@@ -1533,7 +1543,7 @@ public class ExcelUtil {
 		return cellStyle;
 	}
 
-	/** 
+	/**
 	 * 로우 셀 스타일 리턴
 	 */
 	private static CellStyle rowStyle(Workbook workbook) {

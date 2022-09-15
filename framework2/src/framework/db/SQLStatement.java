@@ -1,4 +1,4 @@
-/* 
+/*
  * @(#)SQLStatement.java
  * Statement 를 이용하기 위한 객체
  */
@@ -57,7 +57,7 @@ public class SQLStatement extends DBStatement {
 			if (getLogger().isDebugEnabled()) {
 				StringBuilder log = new StringBuilder();
 				log.append("@Sql Start (STATEMENT) FetchSize : " + stmt.getFetchSize() + " Caller : " + _caller.getClass().getName() + "\n");
-				log.append("@Sql Command => \n" + getSQL());
+				log.append("@Sql Command: \n" + getSQL());
 				getLogger().debug(log.toString());
 			}
 			_rs = new RecordSet(stmt.executeQuery(getSQL()), currPage, pageSize);
@@ -95,7 +95,7 @@ public class SQLStatement extends DBStatement {
 			if (getLogger().isDebugEnabled()) {
 				StringBuilder log = new StringBuilder();
 				log.append("@Sql Start (STATEMENT) FetchSize : " + stmt.getFetchSize() + " Caller : " + _caller.getClass().getName() + "\n");
-				log.append("@Sql Command => \n" + getSQL());
+				log.append("@Sql Command: \n" + getSQL());
 				getLogger().debug(log.toString());
 			}
 			_upCnt = stmt.executeUpdate(getSQL());
@@ -130,6 +130,7 @@ public class SQLStatement extends DBStatement {
 		this._sql = newSql;
 	}
 
+	@Override
 	public String toString() {
 		return "SQL : " + getSQL();
 	}

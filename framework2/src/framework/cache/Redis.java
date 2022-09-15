@@ -1,4 +1,4 @@
-/** 
+/**
  * @(#)Redis.java
  */
 package framework.cache;
@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import framework.config.Configuration;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import framework.config.Configuration;
 
 /**
  * Redis 캐시 구현체 (http://redis.io/)
@@ -29,7 +29,7 @@ public class Redis extends AbstractCache {
 	 */
 	private static Redis _uniqueInstance;
 
-	/** 
+	/**
 	 * 타임아웃 값 (ms)
 	 */
 	private static final int _TIMEOUT = 500;
@@ -37,32 +37,24 @@ public class Redis extends AbstractCache {
 	/**
 	 * 캐시 클라이언트 Pool
 	 */
-	private ShardedJedisPool _pool;
+	private final ShardedJedisPool _pool;
 
 	/**
 	 * 생성자, 외부에서 객체를 인스턴스화 할 수 없도록 설정
 	 */
 	private Redis() {
 		List<JedisShardInfo> shards;
-		if (_getConfig().containsKey("redis.host")) {
-			shards = _getAddresses(_getConfig().getString("redis.host"));
-		} else if (_getConfig().containsKey("redis.1.host")) {
-			int count = 1;
-			StringBuilder buffer = new StringBuilder();
-			while (_getConfig().containsKey("redis." + count + ".host")) {
-				buffer.append(_getConfig().getString("redis." + count + ".host") + " ");
-				count++;
-			}
-			shards = _getAddresses(buffer.toString());
+		if (Configuration.getInstance().containsKey("redis.servers")) {
+			shards = _getAddresses(Configuration.getInstance().getString("redis.servers"));
 		} else {
 			throw new RuntimeException("redis의 호스트설정이 누락되었습니다.");
 		}
 		_pool = new ShardedJedisPool(new JedisPoolConfig(), shards);
 	}
 
-	/** 
+	/**
 	 * 객체의 인스턴스를 리턴해준다.
-	 * 
+	 *
 	 * @return Redis 객체의 인스턴스
 	 */
 	public synchronized static Redis getInstance() {
@@ -214,14 +206,6 @@ public class Redis extends AbstractCache {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////Private 메소드
-
-	/**
-	* 설정파일(config.properties)에서 값을 읽어오는 클래스를 리턴한다.
-	* @return 설정객체
-	*/
-	private Configuration _getConfig() {
-		return Configuration.getInstance();
-	}
 
 	/**
 	 * 문자열에서 redis 호스트 주소를 파싱하여 리턴한다.

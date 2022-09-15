@@ -1,4 +1,4 @@
-/** 
+/**
  * @(#)RecordSet.java
  */
 package framework.db;
@@ -39,6 +39,8 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 생성자
+	 * @param rs ResultSet
+	 * @throws SQLException SQLException
 	 */
 	public RecordSet(ResultSet rs) throws SQLException {
 		this(rs, 0, 0);
@@ -50,8 +52,8 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	 * @param rs 쿼리 실행결과
 	 * @param curpage 현재 표시할 페이지
 	 * @param pagesize 한 페이지에 표시할 데이터 갯수
-	 * 
-	 * @throws SQLException
+	 *
+	 * @throws SQLException SQLException
 	 */
 	public RecordSet(ResultSet rs, int curpage, int pagesize) throws SQLException {
 		if (rs == null) {
@@ -70,7 +72,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 			//Table의 Field 가 소문자 인것은 대문자로 변경처리
 			_colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			_columnsType[i - 1] = rsmd.getColumnType(i);
-			//Fiels 의 정보 및 Size 추가 
+			//Fiels 의 정보 및 Size 추가
 			_colSize[i - 1] = rsmd.getColumnDisplaySize(i);
 			_colSizeReal[i - 1] = rsmd.getPrecision(i);
 			_colScale[i - 1] = rsmd.getScale(i);
@@ -112,7 +114,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	}
 
 	/**
-	 * 주어진 쿼리를 수행 후 컬럼의 Size을 int[] 로 반환 
+	 * 주어진 쿼리를 수행 후 컬럼의 Size을 int[] 로 반환
 	 *
 	 * @return String[]
 	 */
@@ -121,7 +123,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	}
 
 	/**
-	 * 주어진 쿼리를 수행 후 컬럼의 실제 Size(숫자속성에 사용)을 int[] 로 반환 
+	 * 주어진 쿼리를 수행 후 컬럼의 실제 Size(숫자속성에 사용)을 int[] 로 반환
 	 *
 	 * @return String[]
 	 */
@@ -130,7 +132,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	}
 
 	/**
-	 * 주어진 쿼리를 수행 후 컬럼의 소숫점 아래 사이즈를 int[] 로 반환 
+	 * 주어진 쿼리를 수행 후 컬럼의 소숫점 아래 사이즈를 int[] 로 반환
 	 *
 	 * @return String[]
 	 */
@@ -148,7 +150,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	}
 
 	/**
-	 * 주어진 쿼리를 수행 후 컬럼의 타입을 int[] 로 반환 
+	 * 주어진 쿼리를 수행 후 컬럼의 타입을 int[] 로 반환
 	 * @return String[]
 	 */
 	public int[] getColumnsType() {
@@ -178,7 +180,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 주어진 쿼리 수행 후 결과 row의 갯수를 구한다
-	 * 
+	 *
 	 * @return	int Row의 갯수
 	 */
 	public int getRowCount() {
@@ -190,7 +192,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재 참조하고 있는 row의 위치를 구한다.
-	 * 
+	 *
 	 * @return	int 현재 Row의 위치
 	 */
 	public int getCurrentRow() {
@@ -199,9 +201,9 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 쿼리 수행에 의해 얻어진 결과의 특정 column의 이름을 얻는다
-	 * 
+	 *
 	 * @param	index	얻고자 하는 컬럼 위치, 첫번째 컬럼은 1
-	 * 
+	 *
 	 * @return	String 해당 column의 이름
 	 */
 	public String getColumnLabel(int index) throws IllegalArgumentException, NullPointerException {
@@ -216,7 +218,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 처음으로 이동한다.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean firstRow() {
@@ -225,7 +227,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 처음row인지 아닌지 여부 판단.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean isFirst() {
@@ -234,7 +236,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 마지막row인지 아닌지 여부 판단.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean isLast() {
@@ -243,7 +245,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 마지막으로 이동한다.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean lastRow() {
@@ -256,7 +258,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet에서 현재 row의 다음 row로 이동한다.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean nextRow() {
@@ -269,7 +271,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 현재 row의 이전 row로 이동한다.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean preRow() {
@@ -282,6 +284,8 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 해당하는 하는 row로 이동
+	 * @param row row number, 첫번째 row는 1
+	 * @return 이동성공 여부
 	 */
 	public boolean moveRow(int row) {
 		if (_rows != null && _rows.size() != 0 && row <= _rows.size()) {
@@ -293,9 +297,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * Recordset 데이타를 얻어온다.
-	 * 
+	 *
 	 * @param row cnt : start 1
 	 * @param column name
+	 * @return column data
 	 */
 	public Object get(int row, String column) {
 		return _rows.get(row - 1).get(column.toUpperCase());
@@ -303,11 +308,11 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 column 값을 String으로 반환하는 메소드
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return String  column data
+	 *
+	 * @return column data
 	 */
 	public String getString(int row, String column) {
 		if (get(row, column) == null) {
@@ -318,23 +323,23 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 column 값을 int로 반환하는 메소드
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return int  column data
+	 *
+	 * @return column data
 	 */
 	public int getInt(int row, String column) {
 		return getBigDecimal(row, column).intValue();
 	}
 
-	/** 
+	/**
 	 * RecordSet의 column 값을 int로 반환하는 메소드
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return int  column data   
+	 *
+	 * @return column data
 	 */
 	public int getInteger(int row, String column) {
 		return getBigDecimal(row, column).intValue();
@@ -342,11 +347,11 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 column 값을 long 형으로 반환하는 메소드
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return long  column data
+	 *
+	 * @return column data
 	 */
 	public long getLong(int row, String column) {
 		return getBigDecimal(row, column).longValue();
@@ -354,11 +359,11 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 Column 값을 double 로 반환하는 메소드
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return double column data
+	 *
+	 * @return column data
 	 */
 	public double getDouble(int row, String column) {
 		return getBigDecimal(row, column).doubleValue();
@@ -366,11 +371,11 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 Column 값을 BigDecimal 로 반환하는 메소드
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return BigDecimal column data
+	 *
+	 * @return column data
 	 */
 	public BigDecimal getBigDecimal(int row, String column) {
 		if (get(row, column) == null) {
@@ -381,10 +386,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 Column 값을 BigDecimal 로 반환하는 메소드
-	 * 
+	 *
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return BigDecimal column data
+	 *
+	 * @return column data
 	 */
 	public BigDecimal getBigDecimal(String column) {
 		return getBigDecimal(_currow, column);
@@ -392,11 +397,11 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * RecordSet의 column 값을 float로 반환하는 메소드
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return float  column data
+	 *
+	 * @return column data
 	 */
 	public float getFloat(int row, String column) {
 		return getBigDecimal(row, column).floatValue();
@@ -405,11 +410,11 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	/**
 	 * RecordSet의 column 값을 Date형으로 반환하는 메소드
 	 * YYYY-MM-DD 로 반환
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return float  column data
+	 *
+	 * @return column data
 	 */
 	public Date getDate(int row, String column) {
 		return Date.valueOf(getString(row, column).substring(0, 10));
@@ -418,11 +423,11 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	/**
 	 * RecordSet의 column 값을 Timestamp형으로 반환하는 메소드
 	 * YYYY-MM-DD 로 반환
-	 * 
+	 *
 	 * @param row  row number, 첫번째 row는 1
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return float  column data
+	 *
+	 * @return column data
 	 */
 	public Timestamp getTimestamp(int row, String column) {
 		if ((String) get(row, column) == null) {
@@ -434,10 +439,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재 pointing 된 row의 column 데이터를 읽는다
-	 * 
+	 *
 	 * @param	column	column number, 첫번째 column 은 1
-	 * 
-	 * @return String column data
+	 *
+	 * @return column data
 	 */
 	public Object get(int column) {
 		return get(_currow, _colNms[column]);
@@ -445,10 +450,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재행의 RecordSet의 int 값을 반환하는 메소드
-	 * 
+	 *
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return int
+	 *
+	 * @return column data
 	 */
 	public int getInt(int column) {
 		return getInt(_currow, _colNms[column]);
@@ -456,10 +461,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재행의 RecordSet의 int 값을 반환하는 메소드
-	 * 
+	 *
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return Integer
+	 *
+	 * @return column data
 	 */
 	public int getInteger(int column) {
 		return getInteger(_currow, _colNms[column]);
@@ -467,10 +472,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재 행의 RecordSet의 long 값을 반환하는 메소드
-	 * 
+	 *
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return long
+	 *
+	 * @return column data
 	 */
 	public long getLong(int column) {
 		return getLong(_currow, _colNms[column]);
@@ -478,10 +483,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재 행의 RecordSet의 float 값을 반환하는 메소드
-	 * 
+	 *
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return float
+	 *
+	 * @return column data
 	 */
 	public float getFloat(int column) {
 		return getFloat(_currow, _colNms[column]);
@@ -489,10 +494,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재 행의 RecordSet의 double 값을 반환하는 메소드
-	 * 
+	 *
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return double
+	 *
+	 * @return column data
 	 */
 	public double getDouble(int column) {
 		return getDouble(_currow, _colNms[column]);
@@ -501,10 +506,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	/**
 	 * 현재 행의 RecordSet의 Date 값을 반환하는 메소드
 	 * YYYY-MM-DD 로 반환
-	 * 
+	 *
 	 * @param column  column number, 첫번째 column은 1
-	 * 
-	 * @return Date
+	 *
+	 * @return column data
 	 */
 	public Date getDate(int column) {
 		return getDate(_currow, _colNms[column]);
@@ -512,10 +517,10 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 현재 형의 RecordSet의 Timestamp 값을 반환하는 메소드
-	 * 
-	 * @param column
-	 * 
-	 * @return Timestamp
+	 *
+	 * @param column  column number, 첫번째 column은 1
+	 *
+	 * @return column data
 	 */
 	public Timestamp getTimestamp(int column) {
 		return getTimestamp(_currow, _colNms[column]);
@@ -525,32 +530,32 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 column 데이터를 구한다
 	 *
 	 * @param	name	읽고자 하는 column 이름
-	 * 
+	 *
 	 * @return	column data
 	 */
-	public Object get(String name) throws ColumnNotFoundException {
+	public Object get(String name) {
 		return get(_currow, name);
 	}
 
 	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 int형 column 데이터를 구한다
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return int
+	 *
+	 * @return column data
 	 */
-	public int getInt(String name) throws ColumnNotFoundException {
+	public int getInt(String name) {
 		return getInt(_currow, name);
 	}
 
 	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 int형 column 데이터를 구한다
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return Integer
+	 *
+	 * @return column data
 	 */
-	public Integer getInteger(String name) throws ColumnNotFoundException {
+	public Integer getInteger(String name) {
 		Integer returnValue = null;
 		returnValue = Integer.valueOf(getInt(_currow, name));
 		return returnValue;
@@ -558,69 +563,69 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 long형 column 데이터를 구한다
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return long
+	 *
+	 * @return column data
 	 */
-	public long getLong(String name) throws ColumnNotFoundException {
+	public long getLong(String name) {
 		return getLong(_currow, name);
 	}
 
-	/** 
+	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 String형 column 데이터를 구한다
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return String
+	 *
+	 * @return column data
 	 */
-	public String getString(String name) throws ColumnNotFoundException {
+	public String getString(String name) {
 		return getString(_currow, name);
 	}
 
 	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 float형 column 데이터를 구한다
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return float
+	 *
+	 * @return column data
 	 */
-	public float getFloat(String name) throws ColumnNotFoundException {
+	public float getFloat(String name) {
 		return getFloat(_currow, name);
 	}
 
 	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 double형 column 데이터를 구한다
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return double
+	 *
+	 * @return column data
 	 */
-	public double getDouble(String name) throws ColumnNotFoundException {
+	public double getDouble(String name) {
 		return getDouble(_currow, name);
 	}
 
 	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 Date형 column 데이터를 구한다
 	 * YYYY-MM-DD로 반환
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return Date
+	 *
+	 * @return column data
 	 */
-	public Date getDate(String name) throws ColumnNotFoundException {
+	public Date getDate(String name) {
 		return getDate(_currow, name);
 	}
 
 	/**
 	 * 인자로 전해진 이름을 가지는 현재 pointing된 row의 Date형 column 데이터를 구한다
 	 * YYYY-MM-DD로 반환
-	 * 
+	 *
 	 * @param name 읽고자 하는 column 이름
-	 * 
-	 * @return Date
+	 *
+	 * @return column data
 	 */
-	public Timestamp getTimestamp(String name) throws ColumnNotFoundException {
+	public Timestamp getTimestamp(String name) {
 		return getTimestamp(_currow, name);
 	}
 
@@ -628,8 +633,9 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	 * 인자로 전해진 이름을 가지는 column의 위치를 구한다.
 	 *
 	 * @param	name 	column 이름
-	 * 
+	 *
 	 * @return column index, 찾지 못하면 -1
+	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public int findColumn(String name) throws ColumnNotFoundException {
 		if (name == null || _colNms == null) {
@@ -646,7 +652,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 
 	/**
 	 * 레코드 수가 0 인지 check
-	 * 
+	 *
 	 * @return boolean True if there are no records in this object, false otherwise
 	 */
 	public boolean isEmpty() {
@@ -660,6 +666,7 @@ public class RecordSet implements Iterable<Map<String, Object>>, Serializable {
 	/**
 	 * 이터레이터를 반환한다.
 	 */
+	@Override
 	public Iterator<Map<String, Object>> iterator() {
 		return getRows().iterator();
 	}

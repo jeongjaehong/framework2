@@ -1,17 +1,21 @@
-/* 
+/*
  * @(#)StringUtil.java
  */
 package framework.util;
 
-/**
- * 스트링 처리 라이브러리
- */
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
+/**
+ * 스트링 처리 라이브러리
+ */
 public class StringUtil {
+	private static final Pattern TAG_PATTERN = Pattern.compile("<[^<]*?>");
+	private static final Pattern SCRIPT_TAG_PATTERN = Pattern.compile("<\\s*[s|S][c|C][r|R][i|I][p|P][t|T].*?>.*?<\\s*/\\s*[s|S][c|C][r|R][i|I][p|P][t|T]\\s*>", Pattern.DOTALL);
 
 	/**
 	 * 생성자, 외부에서 객체를 인스턴스화 할 수 없도록 설정
@@ -22,11 +26,11 @@ public class StringUtil {
 	/**
 	 * 특정 기호를 기준으로 스트링을 잘라서 배열로 반환하는 함수
 	 * <br>
-	 * ex) abc||def||efg -> array[0]:"abc", array[1]:"def", array[2]:"efg"
-	 * 
+	 * ex) abc||def||efg : array[0]:"abc", array[1]:"def", array[2]:"efg"
+	 *
 	 * @param str 원본 문자열
 	 * @param token 토큰 문자열
-	 * 
+	 *
 	 * @return 토큰으로 분리된 문자열의 배열
 	 */
 	public static String[] tokenFn(String str, String token) {
@@ -58,10 +62,10 @@ public class StringUtil {
 	/**
 	 * 정해진 길이보다 문자열이 크면 문자열을 잘라서 ".."를 추가해 주는 기능.
 	 * 게시판 제목 같은 곳에서 사용됨.
-	 * 
+	 *
 	 * @param str 원본 문자열
 	 * @param len 유효 문자열 길이
-	 * 
+	 *
 	 * @return 유효문자열에 "..." 이 연결된 문자열
 	 */
 	public static String limitString(String str, int len) {
@@ -94,25 +98,25 @@ public class StringUtil {
 
 	/**
 	 * 스트링 타입의 날짜 데이타를 정해진 포맷으로 변환하는 함수
-	 * 
+	 *
 	 * <br>
-	 * ex1) StringUtil.nalDesign("20080101090000", 1) => "2008-01-01"
+	 * ex1) StringUtil.nalDesign("20080101090000", 1): "2008-01-01"
 	 * <br>
-	 * ex2) StringUtil.nalDesign("20080101090000", 2) => "08-01-01 09:00"
+	 * ex2) StringUtil.nalDesign("20080101090000", 2): "08-01-01 09:00"
 	 * <br>
-	 * ex3) StringUtil.nalDesign("20080101090000", 3) => "09:00"
+	 * ex3) StringUtil.nalDesign("20080101090000", 3): "09:00"
 	 * <br>
-	 * ex4) StringUtil.nalDesign("20080101090000", 4) => "01-01"
+	 * ex4) StringUtil.nalDesign("20080101090000", 4): "01-01"
 	 * <br>
-	 * ex5) StringUtil.nalDesign("20080101090000", 5) => "08-01-01"
+	 * ex5) StringUtil.nalDesign("20080101090000", 5): "08-01-01"
 	 * <br>
-	 * ex6) StringUtil.nalDesign("20080101090000", 6) => "01-01 09:00"
+	 * ex6) StringUtil.nalDesign("20080101090000", 6): "01-01 09:00"
 	 * <br>
-	 * ex7) StringUtil.nalDesign("20080101090000", 7) => "2008년 01월 01일"
-	 * 
+	 * ex7) StringUtil.nalDesign("20080101090000", 7): "2008년 01월 01일"
+	 *
 	 * @param str 원본 문자열
 	 * @param option 날짜 옵션
-	 * 
+	 *
 	 * @return 포맷된 날짜 문자열
 	 */
 	public static String nalDesign(String str, int option) {
@@ -142,11 +146,11 @@ public class StringUtil {
 
 	/**
 	 * 스트링의 특정 부분을 다른 기호로 변환하는 함수
-	 * 
+	 *
 	 * @param src 원본 문자열
 	 * @param oldstr 찾을 문자열
 	 * @param newstr 바꿀 문자열
-	 * 
+	 *
 	 * @return 찾을 문자열이 바꿀 문자열로 변환된 문자열
 	 */
 	public static String replaceStr(String src, String oldstr, String newstr) {
@@ -169,10 +173,10 @@ public class StringUtil {
 
 	/**
 	 * 스트링 타입의 바이트 단위를 사람이 읽기 좋은 형태로 변환(KByte, MByte, GByte)
-	 * 
+	 *
 	 * @param stringbyte 스트링으로 표기된 바이트 문자열
-	 * 
-	 * @return 사람이 읽기 좋은 형태의 문자열 
+	 *
+	 * @return 사람이 읽기 좋은 형태의 문자열
 	 */
 	public static String byteToHumanReadable(String stringbyte) {
 		double d = 0.0;
@@ -214,9 +218,9 @@ public class StringUtil {
 
 	/**
 	 * long 타입의 바이트 단위를 사람이 읽기 좋은 형태로 변환(KByte, MByte, GByte)
-	 * 
+	 *
 	 * @param longbyte long타입으로 표기된 바이트 값
-	 * 
+	 *
 	 * @return 사람이 읽기 좋은 형태의 문자열
 	 */
 	public static String byteToHumanReadable(long longbyte) {
@@ -256,35 +260,35 @@ public class StringUtil {
 
 	/**
 	 * 인자에 해당하는 스트링의 charter-set을 한글로 변환하는 함수
-	 * 
+	 *
 	 * @param str 원본 문자열
-	 * 
+	 *
 	 * @return 한글(EUC-KR)로 변환된 문자열
-	 * 
-	 * @exception java.io.UnsupportedEncodingException
+	 *
+	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static String convertKorean(String str) throws java.io.UnsupportedEncodingException {
+	public static String convertKorean(String str) throws UnsupportedEncodingException {
 		return new String(str.getBytes("iso-8859-1"), "EUC-KR");
 	}
 
 	/**
 	 * 인자에 해당하는 스트링의 charter-set을 utf-8로 변환하는 함수
-	 * 
+	 *
 	 * @param str 원본 문자열
-	 * 
+	 *
 	 * @return 유니코드(UTF-8)로 변환된 문자열
-	 * 
-	 * @exception java.io.UnsupportedEncodingException
+	 *
+	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static String convertUTF8(String str) throws java.io.UnsupportedEncodingException {
+	public static String convertUTF8(String str) throws UnsupportedEncodingException {
 		return new String(str.getBytes("iso-8859-1"), "utf-8");
 	}
 
 	/**
 	 * int 타입의 숫자를 숫자형태(세자리마다 ,로 구분)로 변환하는 함수
-	 * 
+	 *
 	 * @param num 원본 int형 숫자
-	 * 
+	 *
 	 * @return 세자리마다 콤마(,)로 구분된 문자열
 	 */
 	public static String numberFormat(int num) {
@@ -293,9 +297,9 @@ public class StringUtil {
 
 	/**
 	 * long 타입의 숫자를 숫자형태(세자리마다 ,로 구분)로 변환하는 함수
-	 * 
+	 *
 	 * @param num 원본 long형 숫자
-	 * 
+	 *
 	 * @return 세자리마다 콤마(,)로 구분된 문자열
 	 */
 	public static String numberFormat(long num) {
@@ -304,9 +308,9 @@ public class StringUtil {
 
 	/**
 	 * 스트링 타입의 숫자를 숫자형태(세자리마다 ,로 구분)로 변환하는 함수
-	 * 
+	 *
 	 * @param str 원본 문자열
-	 * 
+	 *
 	 * @return 세자리마다 콤마(,)로 구분된 문자열
 	 */
 	public static String numberFormat(String str) {
@@ -319,42 +323,38 @@ public class StringUtil {
 
 	/**
 	 * 인자에 해당하는 스트링이 null이면 스트링 타입의 null("")로 변환하는 함수
-	 * 
+	 *
 	 * @param str 원본 문자열
-	 * 
+	 *
 	 * @return 널(null)값을 빈문자("") 로 변환한 문자열
 	 */
 	public static String nullToBlankString(String str) {
-		String rval = "";
-		if (str == null)
-			rval = "";
-		else
-			rval = str;
-		return rval;
+		if (str == null) {
+			return "";
+		}
+		return str;
 	}
 
 	/**
 	 * 첫번째 인자에 해당하는 스트링이 null이면 두번째 인자의 값을 반환하는 함수
-	 * 
+	 *
 	 * @param str1 원본 문자열
 	 * @param str2 스트링이 null 이면 리턴할 문자열
-	 * 
+	 *
 	 * @return 널(null)값을 두번째 인자의 값 문자열
 	 */
 	public static String null2Str(String str1, String str2) {
-		String rval = "";
-		if (str1 == null)
-			rval = str2;
-		else
-			rval = str1;
-		return rval;
+		if (str1 == null) {
+			return str2;
+		}
+		return str1;
 	}
 
 	/**
 	 * 오늘 날짜를 인자에 해당하는 형태로 가져오는 함수
-	 * 
+	 *
 	 * @param option 1 은 "2000-11-12", 2 는 "2000", 3 은 "11", 4 는 "12", 5 는 "20001112", 6 은 시, 7 은 분, 8 은 초, 9 는 요일별 정수전환, 10은 오늘이 몇번째 주인지
-	 * 
+	 *
 	 * @return 오늘날짜를 포맷한 문자열
 	 */
 	public static String makeToday(int option) {
@@ -417,11 +417,11 @@ public class StringUtil {
 
 	/**
 	 * 인자에 해당하는 날짜로부터 몇 일 이동한 날짜를 가져오는 함수
-	 * 
+	 *
 	 * @param curDate 기준 날짜
 	 * @param option 1은 day 만큼 이후의 날짜, 2는 day 만큼 이전의 날짜
 	 * @param day 이후, 이전으로 계산할 일자(일 단위)
-	 * 
+	 *
 	 * @return 변환된 문자열
 	 */
 	public static String moveDate(String curDate, int option, int day) {
@@ -457,7 +457,7 @@ public class StringUtil {
 	 * 인자에 해당하는 날짜와 현재 날짜의 간격이 interval에 포함되면 true, 포함되지 않으면 false를 반환하는 함수
 	 * interval 의 기본값은 1일로 설정된다.
 	 * @param regday 등록 날짜 문자열
-	 * 
+	 *
 	 * @return interval 보다 작으면 true, 같거나 크면 false
 	 */
 	public static boolean isNew(String regday) {
@@ -467,11 +467,11 @@ public class StringUtil {
 
 	/**
 	 * 인자에 해당하는 날짜와 현재 날짜의 간격이 interval에 포함되면 true, 포함되지 않으면 false를 반환하는 함수
-	 * 
+	 *
 	 * @param regday 등록 날짜 문자열
 	 * @param interval 비교할 시간 간격(일 단위)
-	 * 
-	 * @return interval 보다 작으면 true, 같거나 크면 false 
+	 *
+	 * @return interval 보다 작으면 true, 같거나 크면 false
 	 */
 	public static boolean isNew(String regday, int interval) {
 		Calendar today = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
@@ -499,64 +499,62 @@ public class StringUtil {
 	}
 
 	/**
+	 * 문자열이 빈문자열(null 또는 "")인지 검사하여 빈문자열이면 true, 아니면 false를 반환하는 함수
+	 * @param str 체크할 문자열
+	 * @return 빈문자열(null 또는 "")이면 true, 아니면 false
+	 */
+	public static boolean isEmpty(String str) {
+		if (str == null || "".equals(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 문자열이 빈문자열(null 또는 "")이 아닌지 검사하여 빈문자열이면 false, 아니면 true를 반환하는 함수
+	 * @param str 체크할 문자열
+	 * @return 빈문자열(null 또는 "")이면 false, 아니면 true
+	 */
+	public static boolean isNotEmpty(String str) {
+		return !isEmpty(str);
+	}
+
+	/**
 	 * 인자에 포함된 모든 태크를 제거하는 함수
-	 * 
 	 * @param src 원본문자열
 	 * @return 태그가 제거된 문자열
 	 */
 	public static String stripTag(String src) {
-		StringBuilder noTagContent = new StringBuilder();
-		for (int i = 0; i < src.length(); i++) {
-			if (src.charAt(i) == '<') {
-				for (i++; i < src.length(); i++) {
-					if (src.charAt(i) == 'S' || src.charAt(i) == 's') {
-						if (i + 5 >= src.length()) {
-							return noTagContent.toString();
-						}
-						String temp = src.substring(i, i + 6);
-						if (temp.equalsIgnoreCase("script")) {
-							for (i = i + 6; i < src.length(); i++) {
-								if (src.charAt(i) == '<') {
-									if (i + 8 >= src.length()) {
-										return noTagContent.toString();
-									}
-									temp = src.substring(i, i + 9);
-									if (temp.equalsIgnoreCase("</script>")) {
-										i = i + 8;
-										break;
-									}
-								}
-							}
-							if (i >= src.length()) {
-								return noTagContent.toString();
-							}
-						}
-					}
-					if (src.charAt(i) == '>') {
-						break;
-					}
-				}
-				continue;
-			}
-			noTagContent.append(src.charAt(i));
+		if (src == null) {
+			return "";
 		}
-		return noTagContent.toString();
+		String noTag = src;
+		while (TAG_PATTERN.matcher(noTag).find()) {
+			noTag = TAG_PATTERN.matcher(noTag).replaceAll("");
+		}
+		return noTag;
 	}
 
 	/**
 	 * 인자에 포함된 스크립트 태크를 제거하는 함수
-	 * 
 	 * @param src 원본문자열
 	 * @return 스크립트 태그가 제거된 문자열
 	 */
 	public static String stripScriptTag(String src) {
-		String pattern = "<\\s*[s|S][c|C][r|R][i|I][p|P][t|T].*>.*<\\s*/\\s*[s|S][c|C][r|R][i|I][p|P][t|T]\\s*>";
-		return src.replaceAll(pattern, "");
+		if (src == null) {
+			return "";
+		}
+		String noScriptTag = src;
+		while (SCRIPT_TAG_PATTERN.matcher(noScriptTag).find()) {
+			noScriptTag = SCRIPT_TAG_PATTERN.matcher(noScriptTag).replaceAll("");
+		}
+		return noScriptTag;
 	}
 
 	/**
-	 * html 특수문자를 일치하는 문자 엔티티로 변환하는 함수 
-	 * 
+	 * html 특수문자를 일치하는 문자 엔티티로 변환하는 함수
+	 *
 	 * @param src 원본문자열
 	 * @return html 특수문자가 escape 된 문자열
 	 */
@@ -573,29 +571,8 @@ public class StringUtil {
 			case '>':
 				result.append("&gt;");
 				break;
-			case '"':
-				result.append("&quot;");
-				break;
-			case '\'':
-				result.append("&#39;");
-				break;
-			case '%':
-				result.append("&#37;");
-				break;
-			case ';':
-				result.append("&#59;");
-				break;
-			case '(':
-				result.append("&#40;");
-				break;
-			case ')':
-				result.append("&#41;");
-				break;
 			case '&':
 				result.append("&amp;");
-				break;
-			case '+':
-				result.append("&#43;");
 				break;
 			default:
 				result.append(src.charAt(i));

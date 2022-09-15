@@ -1,4 +1,4 @@
-/* 
+/*
  * @(#)SQLBatchStatement.java
  * Statement의 Batch 처리를 이용하기 위한 객체
  */
@@ -62,7 +62,7 @@ public class SQLBatchStatement extends DBStatement {
 			if (getLogger().isDebugEnabled()) {
 				StringBuilder log = new StringBuilder();
 				log.append("@Sql Start (BATCH STATEMENT) FetchSize : " + stmt.getFetchSize() + " Caller : " + _caller.getClass().getName() + "\n");
-				log.append("@Sql Command => \n" + getSQL());
+				log.append("@Sql Command: \n" + getSQL());
 				getLogger().debug(log.toString());
 			}
 			for (int i = 0, size = _sqlList.size(); i < size; i++) {
@@ -87,6 +87,7 @@ public class SQLBatchStatement extends DBStatement {
 		return str.toString();
 	}
 
+	@Override
 	public String toString() {
 		return "SQL : " + getSQL();
 	}
