@@ -264,6 +264,16 @@ public class Box extends HashMap<String, String[]> {
 	}
 
 	/**
+	 * 기존 getlong()으로 정의되어 있던 소스와의 호환성 유지.
+	 * @param key
+	 * @return
+	 */
+	@Deprecated
+	public Long getlong(String key) {
+		return getLong(key, Long.valueOf(0));
+	}
+
+	/**
 	 * 키(key)문자열과 매핑되어 있는 String 객체를 리턴한다.
 	 * 크로스사이트 스크립팅 공격 방지를 위해 &lt;, &gt; 치환을 수행한다.
 	 * @param key 값을 찾기 위한 키 문자열

@@ -64,6 +64,12 @@ public class ConnectionManager {
 		return stmt;
 	}
 
+	public SQLCallableStatement createCallableStatement(String sql) throws SQLException {
+		SQLCallableStatement cstmt = new SQLCallableStatement(sql, this, _caller);
+		_stmtList.add(cstmt);
+		return cstmt;
+	}
+
 	public SQLBatchStatement createBatchStatement() throws SQLException {
 		SQLBatchStatement bstmt = new SQLBatchStatement(this, _caller);
 		_stmtList.add(bstmt);
