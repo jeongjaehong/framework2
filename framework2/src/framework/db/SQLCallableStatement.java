@@ -23,6 +23,8 @@ public class SQLCallableStatement extends DBStatement {
 	private int _upCnt = 0;
 	private List<Object> _param = new ArrayList<Object>();
 	private Object _caller = null;
+	private int _retCode = 0;
+	private String _retMessage = "";
 
 	public SQLCallableStatement(String sql, ConnectionManager connMgr, Object caller) {
 		this._sql = sql;
@@ -80,11 +82,13 @@ public class SQLCallableStatement extends DBStatement {
 				getLogger().debug(log.toString());
 			}
 
-			cstmt.registerOutParameter(getParamSize() + 1, OracleTypes.CURSOR);
+			cstmt.registerOutParameter(getParamSize() + 1, OracleTypes.CURSOR); /* select 결과. */
 			cstmt.registerOutParameter(getParamSize() + 2, OracleTypes.INTEGER);
 			cstmt.registerOutParameter(getParamSize() + 3, OracleTypes.VARCHAR);
 
 			cstmt.executeQuery();
+			_retCode = Integer.parseInt(cstmt.getObject(getParamSize() + 2).toString());
+			_retMessage = cstmt.getObject(getParamSize() + 3).toString();
 
 			if( 0 <= (Integer) cstmt.getObject(getParamSize() + 2) ) {
 				_rs = new RecordSet((ResultSet) cstmt.getObject(getParamSize() + 1), currPage, pageSize);
@@ -144,20 +148,27 @@ public class SQLCallableStatement extends DBStatement {
 				}
 			}
 			
-			cstmt.registerOutParameter(getParamSize() + 1, OracleTypes.INTEGER);
-			cstmt.registerOutParameter(getParamSize() + 2, OracleTypes.VARCHAR);
-			
 			if (getLogger().isDebugEnabled()) {
 				StringBuilder log = new StringBuilder();
 				log.append("@Sql Start (P_STATEMENT) FetchSize : " + cstmt.getFetchSize() + " Caller : " + _caller.getClass().getName() + "\n");
-				log.append("@Sql Command: \n" + getQueryString());
+				log.append("@Sql Command: \n" + getQueryString()+"\n");
+				log.append("@Param Size: " + getParamSize());
 				getLogger().debug(log.toString());
 			}
 			
-			if( 0 <= (Integer) cstmt.getObject(getParamSize() + 1) ) {
-				_upCnt = cstmt.executeUpdate();
-			}else {
+			cstmt.registerOutParameter(getParamSize() + 1, OracleTypes.INTEGER);
+			cstmt.registerOutParameter(getParamSize() + 2, OracleTypes.VARCHAR);
+			
+			_upCnt = cstmt.executeUpdate();
+			_retCode = Integer.parseInt(cstmt.getObject(getParamSize() + 1).toString());
+			_retMessage = cstmt.getObject(getParamSize() + 2).toString();
+			
+			if(null == cstmt.getObject(getParamSize() + 1)  ) {
 				_upCnt = -1;
+				_retCode = -1;
+				_retMessage = "Out parameter return code가 NULL 값입니다.";
+				throw new SQLException( "ErrorCode:-1 \nErrorMessage:Out parameter return code가 NULL 값입니다.");
+			}else if( 0 > (Integer) cstmt.getObject(getParamSize() + 1) ) {
 				throw new SQLException( "ErrorCode:" + (Integer) cstmt.getObject(getParamSize() + 1)  + "\nErrorMessage:" + cstmt.getObject(getParamSize() + 2) );
 			}
 
@@ -215,6 +226,14 @@ public class SQLCallableStatement extends DBStatement {
 
 	public String getSQL() {
 		return this._sql;
+	}
+
+	public int getRetCode() {
+		return this._retCode;
+	}
+	
+	public String getRetMessage() {
+		return this._retMessage;
 	}
 
 	public String getString(int idx) {
