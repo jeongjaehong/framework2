@@ -581,4 +581,21 @@ public class StringUtil {
 		}
 		return result.toString();
 	}
+	
+	/**
+	 * 문자열을 Long형으로 변환하여 리턴.
+	 * 오류가 발생하는 경우 0으로 리턴한다. 
+	 * 
+	 * @param str 원본문자열
+	 * @return 결과값.
+	 */
+	public static long toLong(String str) {
+		try {
+			str = str.trim();
+			str = str.replaceAll(",", "");
+			return Long.parseLong(str);
+		}catch(Exception e) {
+			return 0;
+		}
+	}
 }
