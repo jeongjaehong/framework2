@@ -67,6 +67,17 @@ public class ExcelUtil {
 	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(FileItem fileItem) throws Exception {
+		return parse(fileItem, 0);
+	}
+	
+	/**
+	 *  확장자에 의해서 엑셀파일을 파싱한다.
+	 * @param fileItem 파일 아이템.
+	 * @param startRow 파싱할 파일의 헤더가 있는 행. 컬럼갯수를 측정할 위치. 0부터 시작.
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<Map<String, String>> parse(FileItem fileItem, int startRow) throws Exception {
 		String ext = FileUtil.getFileExtension(fileItem.getName());
 		InputStream is = fileItem.getInputStream();
 		if ("csv".equalsIgnoreCase(ext)) {
@@ -74,7 +85,7 @@ public class ExcelUtil {
 		} else if ("tsv".equalsIgnoreCase(ext)) {
 			return parseTSV(is);
 		} else if ("xls".equalsIgnoreCase(ext)) {
-			return parseXLS(is);
+			return parseXLS(is, startRow);
 		} else if ("xlsx".equalsIgnoreCase(ext)) {
 			return parseXLSX(is);
 		} else {
@@ -1415,9 +1426,13 @@ public class ExcelUtil {
 	}
 
 	private static List<Map<String, String>> parseXLS(InputStream is) throws Exception {
+		return parseXLS(is, 0);
+	}
+
+	private static List<Map<String, String>> parseXLS(InputStream is, int startRow) throws Exception {
 		POIFSFileSystem poiFileSystem = new POIFSFileSystem(is);
 		HSSFWorkbook workbook = new HSSFWorkbook(poiFileSystem);
-		return parseSheet(workbook.getSheetAt(0));
+		return parseSheet(workbook.getSheetAt(0), startRow);
 	}
 
 	private static List<Map<String, String>> parseXLS(InputStream is, String password) throws Exception {
@@ -1478,10 +1493,22 @@ public class ExcelUtil {
 	 * @throws Exception Exception
 	 */
 	private static List<Map<String, String>> parseSheet(Sheet sheet) throws Exception {
+		return parseSheet(sheet, 0);
+	}
+	
+	/**
+	 * 엑셀 시트의 데이터 파싱하여 맵의 리스트로 리턴
+	 * @param sheet
+	 * @param startRow 0부터 시작하는 시작행의 인덱스값.
+	 * @return
+	 * @throws Exception
+	 */
+	private static List<Map<String, String>> parseSheet(Sheet sheet, int startRow) throws Exception {
 		List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		int rowCount = sheet.getPhysicalNumberOfRows();
-		int colCount = sheet.getRow(0).getPhysicalNumberOfCells();
+		int colCount = sheet.getRow(startRow).getPhysicalNumberOfCells();
+		
 		for (int i = 0; i < rowCount; i++) {
 			Row row = sheet.getRow(i);
 			if (row != null) {
