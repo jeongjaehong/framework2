@@ -187,6 +187,7 @@ public class EmailUtil {
 		props.put("mail.smtp.port", smtpPort);
 		props.put("mail.smtp.user", smtpUser);
 		props.put("mail.smtp.auth", true);
+		props.put("mail.smtp.starttls.enable", true);
 		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 		MyAuthenticator auth = new MyAuthenticator(smtpUser, smtpPassword);
 		Session session = Session.getDefaultInstance(props, auth);
