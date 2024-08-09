@@ -187,7 +187,17 @@ public class EmailUtil {
 		props.put("mail.smtp.port", smtpPort);
 		props.put("mail.smtp.user", smtpUser);
 		props.put("mail.smtp.auth", true);
-		props.put("mail.smtp.starttls.enable", true);
+		
+		props.put("mail.smtp.from", fromEmail);
+		// ssl 사용시(이때는 보통 port 465)
+		props.put("mail.smtp.ssl.enable", true);
+	    // tls 사용시(ssl 을 사용할 경우에는 주석)
+		//props.put("mail.smtp.starttls.enable", false);
+
+		//props.put("mail.smtp.ssl.checkserveridentity", false);
+		props.put("mail.smtp.ssl.trust", "*");
+		props.put("mail.protocol.ssl.trust", "*");
+
 		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 		MyAuthenticator auth = new MyAuthenticator(smtpUser, smtpPassword);
 		Session session = Session.getDefaultInstance(props, auth);
