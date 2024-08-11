@@ -157,7 +157,7 @@ public class EmailUtil {
 		props.put("mail.smtp.user", smtpUser);
 		props.put("mail.smtp.auth", true);
 		MyAuthenticator auth = new MyAuthenticator(smtpUser, smtpPassword);
-		Session session = Session.getDefaultInstance(props, auth);
+		Session session = Session.getInstance(props, auth);
 		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session);
 	}
 
@@ -182,25 +182,37 @@ public class EmailUtil {
 	 * @throws MessagingException MessagingException
 	 */
 	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles) throws UnsupportedEncodingException, MessagingException {
+		sendMailAuthSSL( smtpHost,  smtpPort,  smtpUser,  smtpPassword,  subject,  content,  toEmail,  fromEmail,  fromName,  charset,  attachFiles, false) ;
+	}
+
+	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles, boolean debug) throws UnsupportedEncodingException, MessagingException {
 		Properties props = new Properties();
 		props.put("mail.smtp.host", smtpHost);
 		props.put("mail.smtp.port", smtpPort);
 		props.put("mail.smtp.user", smtpUser);
 		props.put("mail.smtp.auth", true);
+		if(debug) props.put("mail.smtp.debug", true);
 		
 		props.put("mail.smtp.from", fromEmail);
 		// ssl 사용시(이때는 보통 port 465)
 		props.put("mail.smtp.ssl.enable", true);
 	    // tls 사용시(ssl 을 사용할 경우에는 주석)
-		//props.put("mail.smtp.starttls.enable", false);
+		props.put("mail.smtp.starttls.enable", true);
 
 		//props.put("mail.smtp.ssl.checkserveridentity", false);
 		props.put("mail.smtp.ssl.trust", "*");
 		props.put("mail.protocol.ssl.trust", "*");
 
+		props.put("mail.smtp.socketFactory.port", smtpPort);
 		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		props.put("mail.smtp.socketFactory.fallback", false);
+        
+        // 네이버 서버와 ssl 통신이 되지 않을 경우 추가
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
 		MyAuthenticator auth = new MyAuthenticator(smtpUser, smtpPassword);
-		Session session = Session.getDefaultInstance(props, auth);
+		Session session = Session.getInstance(props, auth);
+		if(debug) session.setDebug(true);
 		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session);
 	}
 
@@ -311,7 +323,7 @@ public class EmailUtil {
 		props.put("mail.smtp.host", smtpHost);
 		props.put("mail.smtp.port", smtpPort);
 
-		Session session = Session.getDefaultInstance(props, null);
+		Session session = Session.getInstance(props, null);
 		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session);
 	}
 
@@ -339,7 +351,7 @@ public class EmailUtil {
 		props.put("mail.smtp.port", smtpPort);
 		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
-		Session session = Session.getDefaultInstance(props, null);
+		Session session = Session.getInstance(props, null);
 		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session);
 	}
 
