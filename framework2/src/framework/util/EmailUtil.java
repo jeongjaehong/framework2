@@ -373,7 +373,8 @@ public class EmailUtil {
 			Multipart multipart = new MimeMultipart();
 			BodyPart messageBodyPart = new MimeBodyPart();
 
-			messageBodyPart.setText(content);
+			//messageBodyPart.setText(content);
+			messageBodyPart.setContent(content, "text/html; charset=" + charset);
 			multipart.addBodyPart(messageBodyPart);
 
 			for (File f : attachFiles) {
