@@ -5,6 +5,7 @@ package framework.util;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -21,6 +22,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+import com.sun.mail.util.MailSSLSocketFactory;
+
 
 /**
  * JavaMail을 이용해 메일을 발송하는 유틸리티 클래스이다.
@@ -194,22 +197,28 @@ public class EmailUtil {
 		if(debug) props.put("mail.smtp.debug", true);
 		
 		props.put("mail.smtp.from", fromEmail);
+		// tls 사용시(ssl 을 사용할 경우에는 주석)
+		props.put("mail.smtp.starttls.enable", true);
 		// ssl 사용시(이때는 보통 port 465)
 		props.put("mail.smtp.ssl.enable", true);
-	    // tls 사용시(ssl 을 사용할 경우에는 주석)
-		props.put("mail.smtp.starttls.enable", true);
-
-		//props.put("mail.smtp.ssl.checkserveridentity", false);
-		props.put("mail.smtp.ssl.trust", "*");
-		props.put("mail.protocol.ssl.trust", "*");
-
-		props.put("mail.smtp.socketFactory.port", smtpPort);
-		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-		props.put("mail.smtp.socketFactory.fallback", false);
-        
-        // 네이버 서버와 ssl 통신이 되지 않을 경우 추가
+		// 네이버 서버와 ssl 통신이 되지 않을 경우 추가
 		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+		//props.put("mail.smtp.ssl.checkserveridentity", false);
+		//props.put("mail.smtp.ssl.trust", "smtp.worksmobile.com");
 
+		props.put("mail.protocol.ssl.trust", "*");
+		props.put("mail.smtp.socketFactory.port", smtpPort);
+		//props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		try {
+			MailSSLSocketFactory sf = new MailSSLSocketFactory();
+			sf.setTrustAllHosts(true);
+			props.put("mail.smtp.ssl.socketFactory", sf);
+		} catch (GeneralSecurityException e) {
+			throw new MessagingException("SSL 설정 오류", e);
+		}
+
+		props.put("mail.smtp.socketFactory.fallback", false);
+		
 		MyAuthenticator auth = new MyAuthenticator(smtpUser, smtpPassword);
 		Session session = Session.getInstance(props, auth);
 		if(debug) session.setDebug(true);
