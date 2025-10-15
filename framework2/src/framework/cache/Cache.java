@@ -42,22 +42,50 @@ public class Cache {
 	/**
 	 * 캐시 초기화, 설정파일을 읽어 캐시 구현체를 셋팅한다.
 	 */
-	public synchronized static void init() {
-		if (cache == null) {
-			try {
-				cache = Memcached.getInstance();
-				cacheName = "Memcached";
-			} catch (Exception e) {
-				try {
-					cache = Redis.getInstance();
-					cacheName = "Redis";
-				} catch (Exception e2) {
-					cache = EhCache.getInstance();
-					cacheName = "EhCache";
-				}
-			}
-			_getLogger().info(String.format("[ %s ] init : 초기화 성공", cacheName));
-		}
+	public static synchronized void init() {
+	    if (cache == null) {
+	        boolean initialized = false;
+
+	        try {
+	            // Memcached 초기화 시도
+	            _getLogger().info("Initializing Memcached...");
+	            cache = Memcached.getInstance();
+	            cacheName = "Memcached";
+	            initialized = true;
+	        } catch (Exception e) {
+	            _getLogger().warn("Memcached initialization failed: " + e.getMessage(), e);
+	        }
+
+	        if (!initialized) {
+	            try {
+	                // Redis 초기화 시도
+	                _getLogger().info("Initializing Redis...");
+	                cache = Redis.getInstance();
+	                cacheName = "Redis";
+	                initialized = true;
+	            } catch (Exception e) {
+	                _getLogger().warn("Redis initialization failed: " + e.getMessage(), e);
+	            }
+	        }
+
+	        if (!initialized) {
+	            try {
+	                // EhCache 초기화 시도
+	                _getLogger().info("Initializing EhCache...");
+	                cache = EhCache.getInstance();
+	                cacheName = "EhCache";
+	                initialized = true;
+	            } catch (Exception e) {
+	                _getLogger().warn("EhCache initialization failed: " + e.getMessage(), e);
+	            }
+	        }
+
+	        if (initialized) {
+	            _getLogger().info(String.format("[ %s ] init: 초기화 성공!", cacheName));
+	        } else {
+	            throw new IllegalStateException("All cache initialization attempts failed.");
+	        }
+	    }
 	}
 
 	/**

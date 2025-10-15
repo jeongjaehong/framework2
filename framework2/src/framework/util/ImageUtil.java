@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.swing.ImageIcon;
 
 import com.google.zxing.BarcodeFormat;
@@ -112,7 +112,7 @@ public class ImageUtil {
 	public static String captcha(HttpServletResponse response, int width, int height) {
 		response.reset();
 		Captcha captcha = new Captcha.Builder(width, height).addText().addBackground().gimp(new RippleGimpyRenderer()).build();
-		CaptchaServletUtil.writeImage(response, captcha.getImage());
+		//CaptchaServletUtil.writeImage(response, captcha.getImage());
 		return captcha.getAnswer();
 	}
 

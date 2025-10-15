@@ -87,6 +87,9 @@ public class EmailUtil {
 		sendMailAuthSSL(smtpHost, smtpPort, smtpUser, smtpPassword, subject, content, toEmail, fromEmail, fromName, DEFAULT_CHARSET, null);
 	}
 
+	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String[] bccEmails, String fromEmail, String fromName) throws UnsupportedEncodingException, MessagingException {
+		sendMailAuthSSL(smtpHost, smtpPort, smtpUser, smtpPassword, subject, content, toEmail, bccEmails, fromEmail, fromName, DEFAULT_CHARSET, null);
+	}
 	/**
 	 * 보내는 SMTP 서버 인증을 통하여 전자메일을 발송한다.
 	 * <br>
@@ -131,6 +134,10 @@ public class EmailUtil {
 	 */
 	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String fromEmail, String fromName, String charset) throws UnsupportedEncodingException, MessagingException {
 		sendMailAuthSSL(smtpHost, smtpPort, smtpUser, smtpPassword, subject, content, toEmail, fromEmail, fromName, charset, null);
+	}
+
+	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String[] bccEmails, String fromEmail, String fromName, String charset) throws UnsupportedEncodingException, MessagingException {
+		sendMailAuthSSL(smtpHost, smtpPort, smtpUser, smtpPassword, subject, content, toEmail, bccEmails, fromEmail, fromName, charset, null);
 	}
 
 	/**
@@ -184,11 +191,16 @@ public class EmailUtil {
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
 	 */
-	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles) throws UnsupportedEncodingException, MessagingException {
-		sendMailAuthSSL( smtpHost,  smtpPort,  smtpUser,  smtpPassword,  subject,  content,  toEmail,  fromEmail,  fromName,  charset,  attachFiles, false) ;
+	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String[] bccEmails, String fromEmail, String fromName, String charset, File[] attachFiles) throws UnsupportedEncodingException, MessagingException {
+		// 숨은참조 추가. 
+		sendMailAuthSSL( smtpHost,  smtpPort,  smtpUser,  smtpPassword,  subject,  content,  toEmail, bccEmails,  fromEmail,  fromName,  charset,  attachFiles, false) ;
 	}
 
-	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles, boolean debug) throws UnsupportedEncodingException, MessagingException {
+	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles) throws UnsupportedEncodingException, MessagingException {
+		sendMailAuthSSL( smtpHost,  smtpPort,  smtpUser,  smtpPassword,  subject,  content,  toEmail, null,  fromEmail,  fromName,  charset,  attachFiles, false) ;
+	}
+
+	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail,String[] bccEmails, String fromEmail, String fromName, String charset, File[] attachFiles, boolean debug) throws UnsupportedEncodingException, MessagingException {
 		Properties props = new Properties();
 		props.put("mail.smtp.host", smtpHost);
 		props.put("mail.smtp.port", smtpPort);
@@ -222,7 +234,8 @@ public class EmailUtil {
 		MyAuthenticator auth = new MyAuthenticator(smtpUser, smtpPassword);
 		Session session = Session.getInstance(props, auth);
 		if(debug) session.setDebug(true);
-		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session);
+		
+		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session, bccEmails);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////SMTP서버가 인증이 필요없는 경우
@@ -366,15 +379,26 @@ public class EmailUtil {
 
 	//////////////////////////////////////////////////////////////////////////////////////////Private 메소드 및 객체
 
+	private static void sendMail ( String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles, Session session) throws UnsupportedEncodingException, MessagingException {
+		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session, null);
+	}
+	
 	/**
 	 * 메일발송 및 첨부파일 처리
 	 */
-	private static void sendMail(String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles, Session session) throws UnsupportedEncodingException, MessagingException {
+	private static void sendMail(String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles, Session session ,String[] bccEmails) throws UnsupportedEncodingException, MessagingException {
 		MimeMessage message = new MimeMessage(session);
 		InternetAddress addr = new InternetAddress(fromEmail, fromName, charset);
 		message.setFrom(addr);
 		message.setSubject(subject);
 		message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+
+		 // BCC(숨은 참조) 추가
+	    if (bccEmails != null) {
+	        for (String bccEmail : bccEmails) {
+	            message.addRecipient(Message.RecipientType.BCC, new InternetAddress(bccEmail));
+	        }
+	    }
 
 		if (attachFiles == null) {
 			message.setContent(content, "text/html; charset=" + charset);

@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -47,6 +45,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import framework.db.ColumnNotFoundException;
 import framework.db.RecordSet;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Excel 출력을 위해 이용할 수 있는 유틸리티 클래스이다.

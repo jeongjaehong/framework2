@@ -88,10 +88,24 @@ public class ConnectionManager {
 	}
 
 	public void connect(String jdbcDriver, String url, String userID, String userPW) throws Exception {
-		DriverManager.registerDriver((Driver) Class.forName(jdbcDriver).newInstance());
-		setConnection(DriverManager.getConnection(url, userID, userPW));
-		if (getLogger().isDebugEnabled()) {
-			getLogger().debug("DB연결 성공!: " + url);
+		try {
+			DriverManager.registerDriver((Driver) Class.forName(jdbcDriver).newInstance());
+			setConnection(DriverManager.getConnection(url, userID, userPW));
+			if (getLogger().isDebugEnabled()) {
+				getLogger().debug("DB연결 성공!: " + url);
+			}
+		} catch (UnsupportedClassVersionError ucve) {
+			getLogger().debug("오류: JVM 버전이 호환되지 않습니다. Java 8 이상을 사용해야 합니다.");
+			ucve.printStackTrace();
+		} catch (ClassNotFoundException cnfe) {
+			getLogger().debug("오류: 제공된 JDBC 드라이버를 찾을 수 없습니다. 드라이버 클래스를 확인하세요.");
+			cnfe.printStackTrace();
+		} catch (SQLException se) {
+			getLogger().debug("오류: 데이터베이스 연결에 실패했습니다. URL, 사용자명 및 비밀번호를 확인하세요.");
+			se.printStackTrace();
+		} catch (Exception e) {
+			getLogger().debug("예기치 못한 오류가 발생했습니다: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

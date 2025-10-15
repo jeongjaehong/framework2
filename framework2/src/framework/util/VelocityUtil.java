@@ -10,7 +10,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ResourceBundle;
 
-import javax.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServlet;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;

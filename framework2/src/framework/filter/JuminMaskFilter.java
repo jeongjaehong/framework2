@@ -11,15 +11,16 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 
 import framework.util.StringUtil;
 
@@ -125,6 +126,18 @@ public class JuminMaskFilter implements Filter {
 			_bytes.close();
 			super.close();
 			_bytes = null;
+		}
+
+		@Override
+		public boolean isReady() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void setWriteListener(WriteListener arg0) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 }

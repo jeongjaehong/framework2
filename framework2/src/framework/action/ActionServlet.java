@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,7 +74,7 @@ public class ActionServlet extends HttpServlet {
 	 * @param response HTTP 클라이언트 응답객체
 	 *
 	 * @exception java.io.IOException ActionServlet에서 IO와 관련된 오류가 발생할 경우
-	 * @exception javax.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
+	 * @exception jakarta.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -88,7 +88,7 @@ public class ActionServlet extends HttpServlet {
 	 * @param response HTTP 클라이언트 응답객체
 	 *
 	 * @exception java.io.IOException ActionServlet에서 IO와 관련된 오류가 발생할 경우
-	 * @exception javax.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
+	 * @exception jakarta.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -102,7 +102,7 @@ public class ActionServlet extends HttpServlet {
 	 * @param response HTTP 클라이언트 응답객체
 	 *
 	 * @exception java.io.IOException ActionServlet에서 IO와 관련된 오류가 발생할 경우
-	 * @exception javax.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
+	 * @exception jakarta.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
 	 */
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -116,7 +116,7 @@ public class ActionServlet extends HttpServlet {
 	 * @param response HTTP 클라이언트 응답객체
 	 *
 	 * @exception java.io.IOException ActionServlet에서 IO와 관련된 오류가 발생할 경우
-	 * @exception javax.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
+	 * @exception jakarta.servlet.ServletException 서블릿과 관련된 오류가 발생할 경우
 	 */
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

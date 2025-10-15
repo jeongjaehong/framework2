@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,6 +64,8 @@ public abstract class Action {
 		}
 		try {
 			method.invoke(this, (Object[]) null);
+		} catch(Exception e){
+			e.printStackTrace();
 		} finally {
 			flashSave();
 			destroy();
@@ -154,11 +156,16 @@ public abstract class Action {
 			try {
 				dsName = getConfig().getString("jdbc." + serviceName + ".datasource");
 			} catch (Exception e) {
-				// 설정파일에 데이타소스가 정의되어있지 않으면 실행
-				jdbcDriver = getConfig().getString("jdbc." + serviceName + ".driver");
-				jdbcUrl = getConfig().getString("jdbc." + serviceName + ".url");
-				jdbcUid = getConfig().getString("jdbc." + serviceName + ".uid");
-				jdbcPw = getConfig().getString("jdbc." + serviceName + ".pwd");
+				getLogger().error("Datasource not found!", e);
+				try {
+					// 설정파일에 데이타소스가 정의되어있지 않으면 실행
+					jdbcDriver = getConfig().getString("jdbc." + serviceName + ".driver");
+					jdbcUrl = getConfig().getString("jdbc." + serviceName + ".url");
+					jdbcUid = getConfig().getString("jdbc." + serviceName + ".uid");
+					jdbcPw = getConfig().getString("jdbc." + serviceName + ".pwd");
+				} catch (Exception ce) {
+					getLogger().error("Datasource Config load error", ce);
+				}
 			}
 			try {
 				ConnectionManager connMgr = new ConnectionManager(dsName, this);
