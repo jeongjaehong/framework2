@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="framework2:jar">
+    <output-path>$PROJECT_DIR$/../framework2.jar</output-path>
+    <root id="archive" name="framework2.jar">
+      <element id="module-output" name="framework2" />
+    </root>
+  </artifact>
+</component>

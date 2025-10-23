@@ -1,0 +1,50 @@
+<component name="libraryTable">
+  <library name="jakarta.servlet-api-6.0.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jakarta.servlet-api-6.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-io-2.15.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-fileupload2-jakarta-servlet6-2.0.0-M4-tests.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-fileupload2-jakarta-servlet5-2.0.0-M4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-fileupload2-core-2.0.0-M4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/zxing-javase.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/zxing-core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/yuicompressor-2.4.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xmlbeans-2.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/velocity-dep-1.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/stringtree-json-2.0.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/standard.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sqljdbc4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spymemcached-2.11.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-log4j12-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/simplecaptcha-1.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/signpost-core-1.2.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/signpost-commonshttp4-1.2.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/poi-scratchpad-3.7-20101029.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/poi-ooxml-schemas-3.7-20101029.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/poi-ooxml-3.7-20101029.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/poi-3.7-20101029.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ojdbc14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/miplatform-3.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mail.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/log4j-1.2.14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/libMarkanyMaSaferJava.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jstl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jedis-2.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpmime-4.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcore-4.1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpclient-cache-4.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpclient-4.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/htmlcompressor-1.5.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gauce4014.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ehcache-core-2.6.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/dom4j-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-pool-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-codec-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/activation.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
