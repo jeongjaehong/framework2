@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -223,8 +224,12 @@ public class ExcelUtil {
 		if (rs == null) {
 			return 0;
 		}
-		response.setContentType("application/octet-stream;");
-		response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		//response.setContentType("application/octet-stream;");
+		//response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		response.setContentType("application/vnd.ms-excel");
+		String encoded = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+		String fallback = fileName.replaceAll("[^\\x20-\\x7E]", "_");
+		response.setHeader("Content-Disposition","attachment; filename=\"" + fallback + "\"; filename*=UTF-8''" + encoded);
 		response.setHeader("Pragma", "no-cache;");
 		response.setHeader("Expires", "-1;");
 		Workbook workbook = new HSSFWorkbook();
@@ -359,8 +364,12 @@ public class ExcelUtil {
 		if (rs == null) {
 			return 0;
 		}
-		response.setContentType("application/octet-stream;");
-		response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		//response.setContentType("application/octet-stream;");
+		//response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		response.setContentType("application/vnd.ms-excel");
+		String encoded = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+		String fallback = fileName.replaceAll("[^\\x20-\\x7E]", "_");
+		response.setHeader("Content-Disposition","attachment; filename=\"" + fallback + "\"; filename*=UTF-8''" + encoded);
 		response.setHeader("Pragma", "no-cache;");
 		response.setHeader("Expires", "-1;");
 		Workbook workbook = new XSSFWorkbook();
@@ -552,7 +561,10 @@ public class ExcelUtil {
 			return 0;
 		}
 		response.setContentType("application/octet-stream;");
-		response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		//response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		String encoded = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+		String fallback = fileName.replaceAll("[^\\x20-\\x7E]", "_");
+		response.setHeader("Content-Disposition","attachment; filename=\"" + fallback + "\"; filename*=UTF-8''" + encoded);
 		response.setHeader("Pragma", "no-cache;");
 		response.setHeader("Expires", "-1;");
 		PrintWriter pw = response.getWriter();
@@ -694,8 +706,12 @@ public class ExcelUtil {
 		if (rs == null) {
 			return 0;
 		}
-		response.setContentType("application/octet-stream;");
-		response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		//response.setContentType("application/octet-stream;");
+		//response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		response.setContentType("application/vnd.ms-excel");
+		String encoded = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+		String fallback = fileName.replaceAll("[^\\x20-\\x7E]", "_");
+		response.setHeader("Content-Disposition","attachment; filename=\"" + fallback + "\"; filename*=UTF-8''" + encoded);
 		response.setHeader("Pragma", "no-cache;");
 		response.setHeader("Expires", "-1;");
 		Workbook workbook = new HSSFWorkbook();
@@ -857,8 +873,12 @@ public class ExcelUtil {
 		if (rs == null) {
 			return 0;
 		}
-		response.setContentType("application/octet-stream;");
-		response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		//response.setContentType("application/octet-stream;");
+		//response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		response.setContentType("application/vnd.ms-excel");
+		String encoded = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+		String fallback = fileName.replaceAll("[^\\x20-\\x7E]", "_");
+		response.setHeader("Content-Disposition","attachment; filename=\"" + fallback + "\"; filename*=UTF-8''" + encoded);
 		response.setHeader("Pragma", "no-cache;");
 		response.setHeader("Expires", "-1;");
 		Workbook workbook = new XSSFWorkbook();
@@ -1077,7 +1097,11 @@ public class ExcelUtil {
 			return 0;
 		}
 		response.setContentType("application/octet-stream;");
-		response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		//response.setHeader("Content-Disposition", (new StringBuilder("attachment; filename=\"")).append(new String(fileName.getBytes(), "ISO-8859-1")).append("\"").toString());
+		//response.setContentType("application/vnd.ms-excel");
+		String encoded = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+		String fallback = fileName.replaceAll("[^\\x20-\\x7E]", "_");
+		response.setHeader("Content-Disposition","attachment; filename=\"" + fallback + "\"; filename*=UTF-8''" + encoded);
 		response.setHeader("Pragma", "no-cache;");
 		response.setHeader("Expires", "-1;");
 		PrintWriter pw = response.getWriter();
