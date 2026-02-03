@@ -25,7 +25,7 @@ import framework.db.ConnectionManager;
  * 비지니스 로직을 처리하는 클래스가 상속받아야 할 추상클래스이다.
  * 뷰페이지(jsp 페이지)가 실행되기 전에 클라이언트에서 서버로 전송된 데이터를 편리하게 업무로직에 반영하기
  * 위한 전처리(Pre-processing)모듈이다. 하나의 서비스에 대해 여러개의 업무로직을 컴포넌트 형태로 저작하여 등록할 수 있다.
- * 작성된 Actioin은 action.properties에 등록된다.
+ * 작성된 Action은 action.properties에 등록된다.
  */
 public abstract class Action {
 	private final Map<String, ConnectionManager> _connMgrMap = new HashMap<String, ConnectionManager>();
