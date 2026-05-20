@@ -18,19 +18,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42a8d965-76c1-4354-9189-0d6ef5d81089" name="변경" comment="프로젝트 설정 파일 및 인코딩 설정 추가. Action 클래스 주석 오타 수정.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/etc/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/etc/web.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/action/MultipartBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/action/MultipartBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/cache/EhCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/cache/EhCache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/cache/Redis.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/cache/Redis.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/util/EmailUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/util/EmailUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/util/ExcelUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/util/ExcelUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/util/HttpUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/util/HttpUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/util/OAuth10aUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/util/OAuth10aUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework2/src/framework/util/VelocityUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/util/VelocityUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/framework2_jar/framework2.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/framework2_jar/framework2.jar" afterDir="false" />
-    </list>
+    <list default="true" id="42a8d965-76c1-4354-9189-0d6ef5d81089" name="변경" comment="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -146,9 +134,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1779240825536</updated>
-      <workItem from="1779240826536" duration="1671000" />
+      <workItem from="1779240826536" duration="2140000" />
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications.">
+      <option name="closed" value="true" />
+      <created>1779242961872</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1779242961872</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -156,6 +152,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="프로젝트 설정 파일 및 인코딩 설정 추가. Action 클래스 주석 오타 수정." />
-    <option name="LAST_COMMIT_MESSAGE" value="프로젝트 설정 파일 및 인코딩 설정 추가. Action 클래스 주석 오타 수정." />
+    <MESSAGE value="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications." />
+    <option name="LAST_COMMIT_MESSAGE" value="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications." />
   </component>
 </project>
