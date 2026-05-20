@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/nilriri/inteliJProjects/framework2 -type f -name pom.xml -o -name build.gradle -o -name settings.gradle -o -name gradle.properties -o -name web.xml -o -name *.properties -o -name .mvn -type d)",
+      "Bash(mvn --version)",
+      "Bash(brew --version)",
+      "Bash(brew install:*)"
+    ]
+  }
+}

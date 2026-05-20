@@ -6,24 +6,24 @@ import java.util.List;
 
 import org.apache.commons.fileupload2.core.DiskFileItemFactory;
 import org.apache.commons.fileupload2.core.FileItem;
-import org.apache.commons.fileupload2.jakarta.servlet5.JakartaServletFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 
 import framework.config.Configuration;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Multipart ¿äÃ»°´Ã¼, ÄíÅ°°´Ã¼ÀÇ °ªÀ» ´ã´Â ÇØ½ÃÅ×ÀÌºí °´Ã¼ÀÌ´Ù. Multipart ¿äÃ»°´Ã¼ÀÇ ÆÄ¶ó¹ÌÅÍ¸¦ Ãß»óÈ­ ÇÏ¿©
- * MultipartBox ¸¦ »ý¼ºÇØ ³õ°í ÆÄ¶ó¹ÌÅÍÀÌ¸§À» Å°·Î ÇØ´ç °ªÀ» ¿øÇÏ´Â µ¥ÀÌÅ¸ Å¸ÀÔÀ¸·Î ¹ÝÈ¯¹Þ´Â´Ù.
+ * Multipart ï¿½ï¿½Ã»ï¿½ï¿½Ã¼, ï¿½ï¿½Å°ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½Ã¼ï¿½Ì´ï¿½. Multipart ï¿½ï¿½Ã»ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ß»ï¿½È­ ï¿½Ï¿ï¿½
+ * MultipartBox ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ Å°ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½Å¸ Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Þ´Â´ï¿½.
  */
 public class MultipartBox extends Box {
 	private static final long serialVersionUID = -8810823011616521004L;
 	private List<FileItem> _fileItems = null;
 
 	/***
-	 * MultipartBox »ý¼ºÀÚ
+	 * MultipartBox ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * 
 	 * @param name
-	 *            MultipartBox °´Ã¼ÀÇ ÀÌ¸§
+	 *            MultipartBox ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Ì¸ï¿½
 	 */
 	public MultipartBox(String name) {
 		super(name);
@@ -31,38 +31,38 @@ public class MultipartBox extends Box {
 	}
 
 	/**
-	 * Multipart ¿äÃ»°´Ã¼ÀÇ ÆÄ¶ó¹ÌÅÍ ÀÌ¸§°ú °ªÀ» ÀúÀåÇÑ ÇØ½ÃÅ×ÀÌºíÀ» »ý¼ºÇÑ´Ù. <br>
-	 * ex) Multipart Request Box °´Ã¼¸¦ ¾ò´Â °æ¿ì: MultipartBox multipartBox =
+	 * Multipart ï¿½ï¿½Ã»ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. <br>
+	 * ex) Multipart Request Box ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: MultipartBox multipartBox =
 	 * MultipartBox.getMultipartBox(request)
 	 *
 	 * @param request
-	 *            HTTP Å¬¶óÀÌ¾ðÆ® ¿äÃ»°´Ã¼
+	 *            HTTP Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ï¿½Ã»ï¿½ï¿½Ã¼
 	 *
-	 * @return ¿äÃ» MultipartBox °´Ã¼
+	 * @return ï¿½ï¿½Ã» MultipartBox ï¿½ï¿½Ã¼
 	 */
 	public static MultipartBox getMultipartBox(HttpServletRequest request) {
 		MultipartBox multipartBox = new MultipartBox("multipartbox");
 
-		// ÆÄ¶ó¹ÌÅÍ ¸Ê ¼³Á¤
+		// ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		request.getParameterMap().forEach((key, values) -> multipartBox.put(key, values));
 
 		if (request != null && request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/")) {
 			try {
 
-				// Jakarta ¹öÀü ºô´õ »ç¿ë
+				// Jakarta ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 				DiskFileItemFactory factory = DiskFileItemFactory.builder().get();
 
 				JakartaServletFileUpload upload = new JakartaServletFileUpload(factory);
 				upload.setHeaderCharset(StandardCharsets.UTF_8);
 
-				// ÃÖ´ë ÆÄÀÏ Å©±â ¼³Á¤
+				// ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				try {
-					upload.setSizeMax(getConfig().getInt("fileupload.sizeMax")); // ¾÷·Îµå ÃÖ´ë Å©±â ¼³Á¤
+					upload.setSizeMax(getConfig().getInt("fileupload.sizeMax")); // ï¿½ï¿½ï¿½Îµï¿½ ï¿½Ö´ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				} catch (IllegalArgumentException e) {
-					// ¼³Á¤ ¿À·ù ¹«½Ã
+					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				}
 
-				// ¾÷·Îµå ¿äÃ» ÆÄ½Ì
+				// ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½Ã» ï¿½Ä½ï¿½
 				List<FileItem> items = upload.parseRequest(request);
 				for (FileItem item : items) {
 					if (item.isFormField()) {
@@ -91,32 +91,32 @@ public class MultipartBox extends Box {
 	}
 
 	/**
-	 * ÆÄÀÏ¾ÆÀÌÅÛ(FileItem)ÀÇ ¸®½ºÆ® °´Ã¼¸¦ ¸®ÅÏÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½(FileItem)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 	 *
-	 * @return ÆÄÀÏ¾ÆÀÌÅÛ ¸®½ºÆ® °´Ã¼
+	 * @return ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Ã¼
 	 */
 	public List<FileItem> getFileItems() {
 		return _fileItems;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////
-	// Private ¸Þ¼Òµå
+	// Private ï¿½Þ¼Òµï¿½
 
 	/**
-	 * Multipart ÆÄÀÏ¾÷·Îµå½Ã ÆÄÀÏ ¾ÆÀÌÅÛÀ» ¸®½ºÆ®¿¡ Ãß°¡ÇÑ´Ù.
+	 * Multipart ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½Îµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ñ´ï¿½.
 	 *
 	 * @param item
-	 *            ÆÄÀÏÀ» ´ã°í ÀÖ´Â °´Ã¼
-	 * @return ¼º°ø¿©ºÎ
+	 *            ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Ã¼
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	private boolean addFileItem(FileItem item) {
 		return _fileItems.add(item);
 	}
 
 	/**
-	 * ¼³Á¤Á¤º¸¸¦ °¡Áö°í ÀÖ´Â °´Ã¼¸¦ »ý¼ºÇÏ¿© ¸®ÅÏÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 	 *
-	 * @return config.propertiesÀÇ ¼³Á¤Á¤º¸ °´Ã¼
+	 * @return config.propertiesï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 */
 	private static Configuration getConfig() {
 		return Configuration.getInstance();

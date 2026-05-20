@@ -37,8 +37,13 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -48,21 +53,21 @@ import framework.db.RecordSet;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Excel Ãâ·ÂÀ» À§ÇØ ÀÌ¿ëÇÒ ¼ö ÀÖ´Â À¯Æ¿¸®Æ¼ Å¬·¡½ºÀÌ´Ù.
+ * Excel ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Æ¿ï¿½ï¿½Æ¼ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½.
  */
 public class ExcelUtil {
 
 	/**
-	 * »ý¼ºÀÚ, ¿ÜºÎ¿¡¼­ °´Ã¼¸¦ ÀÎ½ºÅÏ½ºÈ­ ÇÒ ¼ö ¾øµµ·Ï ¼³Á¤
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 */
 	private ExcelUtil() {
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////ÆÄ½Ì
+	//////////////////////////////////////////////////////////////////////////////////////////ï¿½Ä½ï¿½
 	/**
-	 * È®ÀåÀÚ¿¡ ÀÇÇØ¼­ ¿¢¼¿ÆÄÀÏÀ» ÆÄ½ÌÇÑ´Ù.
-	 * @param fileItem ÆÄÀÏ¾ÆÀÌÅÛ
-	 * @return µ¥ÀÌÅÍÀÇ ¸®½ºÆ®
+	 * È®ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ñ´ï¿½.
+	 * @param fileItem ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(FileItem fileItem) throws Exception {
@@ -70,9 +75,9 @@ public class ExcelUtil {
 	}
 	
 	/**
-	 *  È®ÀåÀÚ¿¡ ÀÇÇØ¼­ ¿¢¼¿ÆÄÀÏÀ» ÆÄ½ÌÇÑ´Ù.
-	 * @param fileItem ÆÄÀÏ ¾ÆÀÌÅÛ.
-	 * @param startRow ÆÄ½ÌÇÒ ÆÄÀÏÀÇ Çì´õ°¡ ÀÖ´Â Çà. ÄÃ·³°¹¼ö¸¦ ÃøÁ¤ÇÒ À§Ä¡. 0ºÎÅÍ ½ÃÀÛ.
+	 *  È®ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ñ´ï¿½.
+	 * @param fileItem ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+	 * @param startRow ï¿½Ä½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½. ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡. 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 	 * @return
 	 * @throws Exception
 	 */
@@ -88,15 +93,15 @@ public class ExcelUtil {
 		} else if ("xlsx".equalsIgnoreCase(ext)) {
 			return parseXLSX(is);
 		} else {
-			throw new Exception("Áö¿øÇÏÁö ¾Ê´Â ÆÄÀÏÆ÷¸ËÀÔ´Ï´Ù.");
+			throw new Exception("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.");
 		}
 	}
 
 	/**
-	 * ¾ÏÈ£È­µÈ ¿¢¼¿ÆÄÀÏÀ» ÆÄ½ÌÇÑ´Ù.
-	 * @param fileItem ÆÄÀÏ¾ÆÀÌÅÛ
-	 * @param password ºñ¹Ð¹øÈ£
-	 * @return µ¥ÀÌÅÍÀÇ ¸®½ºÆ®
+	 * ï¿½ï¿½È£È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ñ´ï¿½.
+	 * @param fileItem ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param password ï¿½ï¿½Ð¹ï¿½È£
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(FileItem fileItem, String password) throws Exception {
@@ -107,14 +112,14 @@ public class ExcelUtil {
 		} else if ("xlsx".equalsIgnoreCase(ext)) {
 			return parseXLSX(is, password);
 		} else {
-			throw new Exception("Áö¿øÇÏÁö ¾Ê´Â ÆÄÀÏÆ÷¸ËÀÔ´Ï´Ù.");
+			throw new Exception("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.");
 		}
 	}
 
 	/**
-	 * È®ÀåÀÚ¿¡ ÀÇÇØ¼­ ¿¢¼¿ÆÄÀÏÀ» ÆÄ½ÌÇÑ´Ù.
-	 * @param file ÆÄÀÏ
-	 * @return µ¥ÀÌÅÍÀÇ ¸®½ºÆ®
+	 * È®ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(File file) throws Exception {
@@ -131,7 +136,7 @@ public class ExcelUtil {
 			} else if ("xlsx".equalsIgnoreCase(ext)) {
 				return parseXLSX(fis);
 			} else {
-				throw new Exception("Áö¿øÇÏÁö ¾Ê´Â ÆÄÀÏÆ÷¸ËÀÔ´Ï´Ù.");
+				throw new Exception("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.");
 			}
 		} finally {
 			if (fis != null) {
@@ -141,10 +146,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ¾ÏÈ£È­µÈ ¿¢¼¿ÆÄÀÏÀ» ÆÄ½ÌÇÑ´Ù.
-	 * @param file ÆÄÀÏ
-	 * @param password ÆÐ½º¿öµå
-	 * @return µ¥ÀÌÅÍÀÇ ¸®½ºÆ®
+	 * ï¿½ï¿½È£È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
+	 * @param password ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 	 * @throws Exception Exception
 	 */
 	public static List<Map<String, String>> parse(File file, String password) throws Exception {
@@ -157,7 +162,7 @@ public class ExcelUtil {
 			} else if ("xlsx".equalsIgnoreCase(ext)) {
 				return parseXLSX(fis, password);
 			} else {
-				throw new Exception("Áö¿øÇÏÁö ¾Ê´Â ÆÄÀÏÆ÷¸ËÀÔ´Ï´Ù.");
+				throw new Exception("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.");
 			}
 		} finally {
 			if (fis != null) {
@@ -166,14 +171,14 @@ public class ExcelUtil {
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////// RecordSet ÀÌ¿ë
+	////////////////////////////////////////////////////////////////////////////////////////// RecordSet ï¿½Ì¿ï¿½
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setRecordSetXLS°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setRecordSetXLSï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -182,12 +187,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setRecordSetXLS°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setRecordSetXLSï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -196,11 +201,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -209,12 +214,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -253,10 +258,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs RecordSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -265,11 +270,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs RecordSet
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -305,11 +310,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setRecordSetXLSX°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setRecordSetXLSXï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -318,12 +323,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setRecordSetXLSX°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setRecordSetXLSXï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -332,11 +337,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -345,12 +350,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -389,10 +394,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs RecordSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -401,11 +406,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs RecordSet
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -441,11 +446,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» CSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setRecordSetCSV°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ CSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setRecordSetCSVï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -454,11 +459,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» CSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ CSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -467,10 +472,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» CSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * RecordSetï¿½ï¿½ CSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs RecordSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws IOException IOException
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
@@ -479,11 +484,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» TSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setRecordSetTSV°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ TSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setRecordSetTSVï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -492,11 +497,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» TSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * RecordSetï¿½ï¿½ TSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs RecordSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -505,10 +510,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» TSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * RecordSetï¿½ï¿½ TSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs RecordSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws IOException IOException
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
@@ -517,15 +522,15 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÑ´Ù. ExcelUtil.setRecordSetSep°ú µ¿ÀÏ
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setRecordSetSepï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * <br>
-	 * ex) response·Î rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÏ´Â °æ¿ì: ExcelUtil.renderSep(response, rs, ",")
+	 * ex) responseï¿½ï¿½ rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: ExcelUtil.renderSep(response, rs, ",")
 	 *
-	 * @param response Å¬¶óÀÌ¾ðÆ®·Î ÀÀ´äÇÒ Response °´Ã¼
-	 * @param rs ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÒ RecordSet °´Ã¼
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
-	 * @return Ã³¸®°Ç¼ö
+	 * @param response Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Response ï¿½ï¿½Ã¼
+	 * @param rs ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ RecordSet ï¿½ï¿½Ã¼
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -534,15 +539,15 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÑ´Ù.
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) response·Î rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÏ´Â °æ¿ì: ExcelUtil.setRecordSetSep(response, rs, ",")
+	 * ex) responseï¿½ï¿½ rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: ExcelUtil.setRecordSetSep(response, rs, ",")
 	 *
-	 * @param response Å¬¶óÀÌ¾ðÆ®·Î ÀÀ´äÇÒ Response °´Ã¼
-	 * @param rs ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÒ RecordSet °´Ã¼
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
-	 * @return Ã³¸®°Ç¼ö
+	 * @param response Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Response ï¿½ï¿½Ã¼
+	 * @param rs ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ RecordSet ï¿½ï¿½Ã¼
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 * @throws IOException IOException
 	 */
@@ -568,11 +573,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs RecordSet
-	 * @param sep ±¸ºÐÀÚ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param sep ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws IOException IOException
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
@@ -595,14 +600,14 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù. ExcelUtil.formatSep°ú µ¿ÀÏ
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½. ExcelUtil.formatSepï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * <br>
-	 * ex) rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.renderSep(rs, ",")
+	 * ex) rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.renderSep(rs, ",")
 	 *
-	 * @param rs º¯È¯ÇÒ RecordSet °´Ã¼
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param rs ï¿½ï¿½È¯ï¿½ï¿½ RecordSet ï¿½ï¿½Ã¼
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public static String renderSep(RecordSet rs, String sep) throws ColumnNotFoundException {
@@ -610,14 +615,14 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * RecordSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù.
+	 * RecordSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.formatSep(rs, ",")
+	 * ex) rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.formatSep(rs, ",")
 	 *
-	 * @param rs º¯È¯ÇÒ RecordSet °´Ã¼
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param rs ï¿½ï¿½È¯ï¿½ï¿½ RecordSet ï¿½ï¿½Ã¼
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	public static String formatSep(RecordSet rs, String sep) throws ColumnNotFoundException {
@@ -637,14 +642,14 @@ public class ExcelUtil {
 		return buffer.toString();
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////// ResultSet ÀÌ¿ë
+	////////////////////////////////////////////////////////////////////////////////////////// ResultSet ï¿½Ì¿ï¿½
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setResultSetXLS°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setResultSetXLSï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -653,12 +658,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setResultSetXLS°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setResultSetXLSï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -667,11 +672,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -680,12 +685,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -705,7 +710,7 @@ public class ExcelUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			for (int i = 1; i <= count; i++) {
-				//TableÀÇ Field °¡ ¼Ò¹®ÀÚ ÀÎ°ÍÀº ´ë¹®ÀÚ·Î º¯°æÃ³¸®
+				//Tableï¿½ï¿½ Field ï¿½ï¿½ ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½ ï¿½ë¹®ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			}
 			int rowCount = 0;
@@ -737,10 +742,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs ResultSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -749,11 +754,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2003 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs ResultSet
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -769,7 +774,7 @@ public class ExcelUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			for (int i = 1; i <= count; i++) {
-				//TableÀÇ Field °¡ ¼Ò¹®ÀÚ ÀÎ°ÍÀº ´ë¹®ÀÚ·Î º¯°æÃ³¸®
+				//Tableï¿½ï¿½ Field ï¿½ï¿½ ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½ ï¿½ë¹®ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			}
 			int rowCount = 0;
@@ -803,11 +808,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setResultSetXLSX°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setResultSetXLSXï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -816,12 +821,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setResultSetXLSX°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setResultSetXLSXï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -830,11 +835,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -843,12 +848,12 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -868,7 +873,7 @@ public class ExcelUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			for (int i = 1; i <= count; i++) {
-				//TableÀÇ Field °¡ ¼Ò¹®ÀÚ ÀÎ°ÍÀº ´ë¹®ÀÚ·Î º¯°æÃ³¸®
+				//Tableï¿½ï¿½ Field ï¿½ï¿½ ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½ ï¿½ë¹®ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			}
 			int rowCount = 0;
@@ -900,10 +905,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs ResultSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -912,11 +917,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ¿¢¼¿2007 Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½2007 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs ResultSet
-	 * @param header Çì´õ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param header ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -932,7 +937,7 @@ public class ExcelUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			for (int i = 1; i <= count; i++) {
-				//TableÀÇ Field °¡ ¼Ò¹®ÀÚ ÀÎ°ÍÀº ´ë¹®ÀÚ·Î º¯°æÃ³¸®
+				//Tableï¿½ï¿½ Field ï¿½ï¿½ ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½ ï¿½ë¹®ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			}
 			int rowCount = 0;
@@ -966,11 +971,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» CSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setResultSetCSV°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ CSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setResultSetCSVï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -979,11 +984,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» CSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ CSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -992,10 +997,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» CSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * ResultSetï¿½ï¿½ CSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs ResultSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws IOException IOException
 	 * @throws SQLException SQLException
 	 */
@@ -1004,11 +1009,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» TSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù. ExcelUtil.setResultSetTSV°ú µ¿ÀÏ
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ TSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setResultSetTSVï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -1017,11 +1022,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» TSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÀÀ´ä°´Ã¼·Î Àü¼ÛÇÑ´Ù.
-	 * @param response ÀÀ´ä°´Ã¼
+	 * ResultSetï¿½ï¿½ TSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ä°´Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param response ï¿½ï¿½ï¿½ä°´Ã¼
 	 * @param rs ResultSet
-	 * @param fileName ÆÄÀÏ¸í
-	 * @return Ã³¸®°Ç¼ö
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -1030,10 +1035,10 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» TSV Çü½ÄÀ¸·Î º¯È¯ÇÏ¿© ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * ResultSetï¿½ï¿½ TSV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs ResultSet
-	 * @return Ã³¸®°Ç¼ö
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws IOException IOException
 	 * @throws SQLException SQLException
 	 */
@@ -1042,15 +1047,15 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÑ´Ù. ExcelUtil.setResultSetSep°ú µ¿ÀÏ
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. ExcelUtil.setResultSetSepï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * <br>
-	 * ex) response·Î rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÏ´Â °æ¿ì: ExcelUtil.renderSep(response, rs, ",")
+	 * ex) responseï¿½ï¿½ rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: ExcelUtil.renderSep(response, rs, ",")
 	 *
-	 * @param response Å¬¶óÀÌ¾ðÆ®·Î ÀÀ´äÇÒ Response °´Ã¼
-	 * @param rs ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÒ ResultSet °´Ã¼, ResultSet °´Ã¼´Â ÀÚµ¿À¸·Î close µÈ´Ù.
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
-	 * @return Ã³¸®°Ç¼ö
+	 * @param response Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Response ï¿½ï¿½Ã¼
+	 * @param rs ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ResultSet ï¿½ï¿½Ã¼, ResultSet ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ close ï¿½È´ï¿½.
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -1059,15 +1064,15 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÑ´Ù.
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) response·Î rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î Ãâ·ÂÇÏ´Â °æ¿ì: ExcelUtil.setResultSetSep(response, rs, ",")
+	 * ex) responseï¿½ï¿½ rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: ExcelUtil.setResultSetSep(response, rs, ",")
 	 *
-	 * @param response Å¬¶óÀÌ¾ðÆ®·Î ÀÀ´äÇÒ Response °´Ã¼
-	 * @param rs ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÒ ResultSet °´Ã¼, ResultSet °´Ã¼´Â ÀÚµ¿À¸·Î close µÈ´Ù.
-	 * @param fileName ÆÄÀÏ¸í
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
-	 * @return Ã³¸®°Ç¼ö
+	 * @param response Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Response ï¿½ï¿½Ã¼
+	 * @param rs ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ResultSet ï¿½ï¿½Ã¼, ResultSet ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ close ï¿½È´ï¿½.
+	 * @param fileName ï¿½ï¿½ï¿½Ï¸ï¿½
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws SQLException SQLException
 	 * @throws IOException IOException
 	 */
@@ -1085,7 +1090,7 @@ public class ExcelUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			for (int i = 1; i <= count; i++) {
-				//TableÀÇ Field °¡ ¼Ò¹®ÀÚ ÀÎ°ÍÀº ´ë¹®ÀÚ·Î º¯°æÃ³¸®
+				//Tableï¿½ï¿½ Field ï¿½ï¿½ ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½ ï¿½ë¹®ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			}
 			int rowCount = 0;
@@ -1106,11 +1111,11 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î ÆÄÀÏ·Î ÀúÀåÇÑ´Ù.
-	 * @param file ÆÄÀÏ
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param file ï¿½ï¿½ï¿½ï¿½
 	 * @param rs ResultSet
-	 * @param sep ±¸ºÐÀÚ
-	 * @return Ã³¸®°Ç¼ö
+	 * @param sep ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @return Ã³ï¿½ï¿½ï¿½Ç¼ï¿½
 	 * @throws IOException IOException
 	 * @throws SQLException SQLException
 	 */
@@ -1124,7 +1129,7 @@ public class ExcelUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			for (int i = 1; i <= count; i++) {
-				//TableÀÇ Field °¡ ¼Ò¹®ÀÚ ÀÎ°ÍÀº ´ë¹®ÀÚ·Î º¯°æÃ³¸®
+				//Tableï¿½ï¿½ Field ï¿½ï¿½ ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½ ï¿½ë¹®ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			}
 			int rowCount = 0;
@@ -1147,14 +1152,14 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù. ExcelUtil.formatSep°ú µ¿ÀÏ
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½. ExcelUtil.formatSepï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * <br>
-	 * ex) rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.renderSep(rs, ",")
+	 * ex) rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.renderSep(rs, ",")
 	 *
-	 * @param rs º¯È¯ÇÒ ResultSet °´Ã¼, ResultSet °´Ã¼´Â ÀÚµ¿À¸·Î close µÈ´Ù.
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param rs ï¿½ï¿½È¯ï¿½ï¿½ ResultSet ï¿½ï¿½Ã¼, ResultSet ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ close ï¿½È´ï¿½.
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 * @throws SQLException SQLException
 	 */
 	public static String renderSep(ResultSet rs, String sep) throws SQLException {
@@ -1162,14 +1167,14 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ResultSetÀ» ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù.
+	 * ResultSetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) rs¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.formatSep(rs, ",")
+	 * ex) rsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.formatSep(rs, ",")
 	 *
-	 * @param rs º¯È¯ÇÒ ResultSet °´Ã¼, ResultSet °´Ã¼´Â ÀÚµ¿À¸·Î close µÈ´Ù.
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param rs ï¿½ï¿½È¯ï¿½ï¿½ ResultSet ï¿½ï¿½Ã¼, ResultSet ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ close ï¿½È´ï¿½.
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 * @throws SQLException SQLException
 	 */
 	public static String formatSep(ResultSet rs, String sep) throws SQLException {
@@ -1182,7 +1187,7 @@ public class ExcelUtil {
 			int count = rsmd.getColumnCount();
 			String[] colNms = new String[count];
 			for (int i = 1; i <= count; i++) {
-				//TableÀÇ Field °¡ ¼Ò¹®ÀÚ ÀÎ°ÍÀº ´ë¹®ÀÚ·Î º¯°æÃ³¸®
+				//Tableï¿½ï¿½ Field ï¿½ï¿½ ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½ ï¿½ë¹®ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 				colNms[i - 1] = rsmd.getColumnName(i).toUpperCase();
 			}
 			int rowCount = 0;
@@ -1202,31 +1207,31 @@ public class ExcelUtil {
 		return buffer.toString();
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////// ±âÅ¸ Collection ÀÌ¿ë
+	////////////////////////////////////////////////////////////////////////////////////////// ï¿½ï¿½Å¸ Collection ï¿½Ì¿ï¿½
 
 	/**
-	 * Map°´Ã¼¸¦ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù. ExcelUtil.formatSep°ú µ¿ÀÏ
+	 * Mapï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½. ExcelUtil.formatSepï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * <br>
-	 * ex) mapÀ» ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.renderSep(map, ",")
+	 * ex) mapï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.renderSep(map, ",")
 	 *
-	 * @param map º¯È¯ÇÒ Map°´Ã¼
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param map ï¿½ï¿½È¯ï¿½ï¿½ Mapï¿½ï¿½Ã¼
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 */
 	public static String renderSep(Map<String, Object> map, String sep) {
 		return formatSep(map, sep);
 	}
 
 	/**
-	 * Map°´Ã¼¸¦ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù.
+	 * Mapï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) mapÀ» ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.formatSep(map, ",")
+	 * ex) mapï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.formatSep(map, ",")
 	 *
-	 * @param map º¯È¯ÇÒ Map°´Ã¼
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param map ï¿½ï¿½È¯ï¿½ï¿½ Mapï¿½ï¿½Ã¼
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 */
 	public static String formatSep(Map<String, Object> map, String sep) {
 		if (map == null) {
@@ -1238,28 +1243,28 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * List°´Ã¼¸¦ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù. ExcelUtil.formatSep°ú µ¿ÀÏ
+	 * Listï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½. ExcelUtil.formatSepï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * <br>
-	 * ex1) mapList¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.renderSep(mapList, ",")
+	 * ex1) mapListï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.renderSep(mapList, ",")
 	 *
-	 * @param mapList º¯È¯ÇÒ List°´Ã¼
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param mapList ï¿½ï¿½È¯ï¿½ï¿½ Listï¿½ï¿½Ã¼
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 */
 	public static String renderSep(List<Map<String, Object>> mapList, String sep) {
 		return formatSep(mapList, sep);
 	}
 
 	/**
-	 * List°´Ã¼¸¦ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÑ´Ù.
+	 * Listï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex1) mapList¸¦ ¿­±¸ºÐÀÚ ÄÞ¸¶(,) ÀÎ ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯ÇÏ´Â °æ¿ì: String csv = ExcelUtil.formatSep(mapList, ",")
+	 * ex1) mapListï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½(,) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½: String csv = ExcelUtil.formatSep(mapList, ",")
 	 *
-	 * @param mapList º¯È¯ÇÒ List°´Ã¼
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
+	 * @param mapList ï¿½ï¿½È¯ï¿½ï¿½ Listï¿½ï¿½Ã¼
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 *
-	 * @return ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ Çü½ÄÀ¸·Î º¯È¯µÈ ¹®ÀÚ¿­
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 */
 	public static String formatSep(List<Map<String, Object>> mapList, String sep) {
 		if (mapList == null) {
@@ -1276,14 +1281,14 @@ public class ExcelUtil {
 		return buffer.toString();
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////// À¯Æ¿¸®Æ¼
+	////////////////////////////////////////////////////////////////////////////////////////// ï¿½ï¿½Æ¿ï¿½ï¿½Æ¼
 
 	/**
-	 * ±¸ºÐÀÚ·Î ¾²ÀÌ´Â ¹®ÀÚ¿­ ¶Ç´Â °³Çà¹®ÀÚ°¡ °ª¿¡ Æ÷ÇÔµÇ¾î ÀÖÀ» °æ¿ì °ªÀ» ½Öµû¿ÈÇ¥·Î µÑ·¯½Îµµ·Ï º¯È¯ÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½à¹®ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ÔµÇ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½Ñ·ï¿½ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
 	 *
-	 * @param str º¯È¯ÇÒ ¹®ÀÚ¿­
-	 * @param sep ¿­ ±¸ºÐÀÚ·Î ¾²ÀÏ ¹®ÀÚ¿­
-	 * @return escape µÈ ¹®ÀÚ¿­
+	 * @param str ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @param sep ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @return escape ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 */
 	public static String escapeSep(String str, String sep) {
 		if (str == null) {
@@ -1292,11 +1297,11 @@ public class ExcelUtil {
 		return (str.contains(sep) || str.contains("\n")) ? "\"" + str + "\"" : str;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////// Private ¸Þ¼Òµå
+	////////////////////////////////////////////////////////////////////////////////////////// Private ï¿½Þ¼Òµï¿½
 
 	/**
-	 * ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ »ý¼º¿ë Row ¹®ÀÚ¿­ »ý¼º
-	 * µ¥ÀÌÅ¸°¡ ¼ýÀÚ°¡ ¾Æ´Ò¶§¿¡´Â ±¸ºÐÀÚ·Î ¾²ÀÎ ¹®ÀÚ¿­ ¶Ç´Â °³Çà¹®ÀÚ¸¦ escape ÇÏ±â À§ÇØ °ªÀ» ½Öµû¿ÈÇ¥·Î µÑ·¯½Ñ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Row ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Æ´Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½à¹®ï¿½Ú¸ï¿½ escape ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½Ñ·ï¿½ï¿½Ñ´ï¿½.
 	 */
 	private static String sepRowStr(Map<String, Object> map, String sep) {
 		StringBuilder buffer = new StringBuilder();
@@ -1321,8 +1326,8 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ »ý¼º¿ë Row ¹®ÀÚ¿­ »ý¼º
-	 * µ¥ÀÌÅ¸°¡ ¼ýÀÚ°¡ ¾Æ´Ò¶§¿¡´Â ±¸ºÐÀÚ·Î ¾²ÀÎ ¹®ÀÚ¿­ ¶Ç´Â °³Çà¹®ÀÚ¸¦ escape ÇÏ±â À§ÇØ °ªÀ» ½Öµû¿ÈÇ¥·Î µÑ·¯½Ñ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Row ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Æ´Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½à¹®ï¿½Ú¸ï¿½ escape ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½Ñ·ï¿½ï¿½Ñ´ï¿½.
 	 * @throws ColumnNotFoundException ColumnNotFoundException
 	 */
 	private static String sepRowStr(RecordSet rs, String[] colNms, String sep) throws ColumnNotFoundException {
@@ -1347,8 +1352,8 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ±¸ºÐÀÚ(CSV, TSV µî)ÆÄÀÏ »ý¼º¿ë Row ¹®ÀÚ¿­ »ý¼º
-	 * µ¥ÀÌÅ¸°¡ ¼ýÀÚ°¡ ¾Æ´Ò¶§¿¡´Â ±¸ºÐÀÚ·Î ¾²ÀÎ ¹®ÀÚ¿­ ¶Ç´Â °³Çà¹®ÀÚ¸¦ escape ÇÏ±â À§ÇØ °ªÀ» ½Öµû¿ÈÇ¥·Î µÑ·¯½Ñ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(CSV, TSV ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Row ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Æ´Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½à¹®ï¿½Ú¸ï¿½ escape ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½Ñ·ï¿½ï¿½Ñ´ï¿½.
 	 * @throws SQLException SQLException
 	 */
 	private static String sepRowStr(ResultSet rs, String[] colNms, String sep) throws SQLException {
@@ -1486,9 +1491,9 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * ¿¢¼¿ ½ÃÆ®ÀÇ µ¥ÀÌÅÍ ÆÄ½ÌÇÏ¿© ¸ÊÀÇ ¸®½ºÆ®·Î ¸®ÅÏ
-	 * @param sheet ¿¢¼¿ ¿öÅ©½ÃÆ®
-	 * @return µ¥ÀÌÅÍ¸¦ °¡Áö°í ÀÖ´Â ¸ÊÀÇ ¸®½ºÆ®
+	 * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	 * @param sheet ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 	 * @throws Exception Exception
 	 */
 	private static List<Map<String, String>> parseSheet(Sheet sheet) throws Exception {
@@ -1496,9 +1501,9 @@ public class ExcelUtil {
 	}
 	
 	/**
-	 * ¿¢¼¿ ½ÃÆ®ÀÇ µ¥ÀÌÅÍ ÆÄ½ÌÇÏ¿© ¸ÊÀÇ ¸®½ºÆ®·Î ¸®ÅÏ
+	 * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * @param sheet
-	 * @param startRow 0ºÎÅÍ ½ÃÀÛÇÏ´Â ½ÃÀÛÇàÀÇ ÀÎµ¦½º°ª.
+	 * @param startRow 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½.
 	 * @return
 	 * @throws Exception
 	 */
@@ -1543,54 +1548,54 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * Çì´õ ¼¿ ½ºÅ¸ÀÏ ¸®ÅÏ
+	 * ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 */
 	private static CellStyle headerStyle(Workbook workbook) {
 		Font font = workbook.createFont();
 		font.setFontHeightInPoints((short) 11);
-		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		font.setFontName("µ¸¿ò");
-		font.setColor(HSSFColor.BLACK.index);
+		font.setBold(true);
+		font.setFontName("êµ´ë¦¼");
+		font.setColor(IndexedColors.BLACK.getIndex());
 		CellStyle cellStyle = workbook.createCellStyle();
 		cellStyle.setFont(font);
-		cellStyle.setFillForegroundColor(HSSFColor.YELLOW.index);
-		cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		cellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setBottomBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setLeftBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setRightBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setTopBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-		cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+		cellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+		cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		cellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setAlignment(HorizontalAlignment.CENTER);
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 		cellStyle.setWrapText(true);
 		return cellStyle;
 	}
 
 	/**
-	 * ·Î¿ì ¼¿ ½ºÅ¸ÀÏ ¸®ÅÏ
+	 * ï¿½Î¿ï¿½ ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 */
 	private static CellStyle rowStyle(Workbook workbook) {
 		Font font = workbook.createFont();
 		font.setFontHeightInPoints((short) 11);
-		font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
-		font.setFontName("µ¸¿ò");
-		font.setColor(HSSFColor.BLACK.index);
+		font.setBold(false);
+		font.setFontName("êµ´ë¦¼");
+		font.setColor(IndexedColors.BLACK.getIndex());
 		CellStyle cellStyle = workbook.createCellStyle();
 		cellStyle.setFont(font);
-		cellStyle.setFillForegroundColor(HSSFColor.WHITE.index);
-		cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		cellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setBottomBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setLeftBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setRightBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-		cellStyle.setTopBorderColor(HSSFColor.BLACK.index);
-		cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+		cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		cellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 		cellStyle.setWrapText(true);
 		return cellStyle;
 	}

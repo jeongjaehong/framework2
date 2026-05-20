@@ -12,16 +12,16 @@ import java.util.Map.Entry;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -29,18 +29,18 @@ import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 
 /**
- * OAuth 1.0a ÀÎÁõÀ» »ç¿ëÇÏ±â À§ÇÑ À¯Æ¿¸®Æ¼ Å¬·¡½ºÀÌ´Ù.
+ * OAuth 1.0a ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¿ï¿½ï¿½Æ¼ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½.
  */
 public class OAuth10aUtil {
 
 	/**
-	 * »ý¼ºÀÚ, ¿ÜºÎ¿¡¼­ °´Ã¼¸¦ ÀÎ½ºÅÏ½ºÈ­ ÇÒ ¼ö ¾øµµ·Ï ¼³Á¤
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 */
 	private OAuth10aUtil() {
 	}
 
 	/**
-	 * Result °´Ã¼
+	 * Result ï¿½ï¿½Ã¼
 	 */
 	public static class Result {
 		private int _statusCode;
@@ -70,7 +70,7 @@ public class OAuth10aUtil {
 	}
 
 	/**
-	 * Consumer °´Ã¼
+	 * Consumer ï¿½ï¿½Ã¼
 	 */
 	public static class Consumer extends CommonsHttpOAuthConsumer {
 		private static final long serialVersionUID = 3312085951191371927L;
@@ -86,7 +86,7 @@ public class OAuth10aUtil {
 	}
 
 	/**
-	 * Provider °´Ã¼
+	 * Provider ï¿½ï¿½Ã¼
 	 */
 	public static class Provider extends CommonsHttpOAuthProvider {
 		private static final long serialVersionUID = -4670920617701598709L;
@@ -98,43 +98,43 @@ public class OAuth10aUtil {
 	}
 
 	/**
-	 * RequestToken ¿äÃ» ´Ü°è¿¡ ÇÊ¿äÇÑ Consumer¸¦ »ý¼ºÇÑ´Ù.
-	 * @param consumerKey ÄÁ½´¸ÓÅ°
-	 * @param consumerSecret ÄÁ½´¸Ó½ÃÅ©¸´
-	 * @return Consumer °´Ã¼
+	 * RequestToken ï¿½ï¿½Ã» ï¿½Ü°è¿¡ ï¿½Ê¿ï¿½ï¿½ï¿½ Consumerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param consumerKey ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å°
+	 * @param consumerSecret ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½Å©ï¿½ï¿½
+	 * @return Consumer ï¿½ï¿½Ã¼
 	 */
 	public static Consumer makeConsumer(String consumerKey, String consumerSecret) {
 		return new Consumer(consumerKey, consumerSecret);
 	}
 
 	/**
-	 * Protected Resource ¿äÃ» ´Ü°è¿¡ ÇÊ¿äÇÑ Consumer¸¦ »ý¼ºÇÑ´Ù.
-	 * @param consumerKey ÄÁ½´¸ÓÅ°
-	 * @param consumerSecret ÄÁ½´¸Ó½ÃÅ©¸´
-	 * @param token ¾×¼¼½ºÅäÅ«
-	 * @param tokenSecret ¾×¼¼½ºÅäÅ«½ÃÅ©¸´
-	 * @return Consumer °´Ã¼
+	 * Protected Resource ï¿½ï¿½Ã» ï¿½Ü°è¿¡ ï¿½Ê¿ï¿½ï¿½ï¿½ Consumerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param consumerKey ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å°
+	 * @param consumerSecret ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½Å©ï¿½ï¿½
+	 * @param token ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½Å«
+	 * @param tokenSecret ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½Å«ï¿½ï¿½Å©ï¿½ï¿½
+	 * @return Consumer ï¿½ï¿½Ã¼
 	 */
 	public static Consumer makeConsumer(String consumerKey, String consumerSecret, String token, String tokenSecret) {
 		return new Consumer(consumerKey, consumerSecret, token, tokenSecret);
 	}
 
 	/**
-	 * ÀÔ·ÂÇÑ °ªÀ¸·Î ProviderÀ» »ý¼ºÇÑ´Ù.
-	 * @param requestTokenEndpointUrl ¿äÃ» ÅäÅ« ÁÖ¼Ò
-	 * @param accessTokenEndpointUrl ¿¢¼¼½º ÅäÅ« ÁÖ¼Ò
-	 * @param authorizationWebsiteUrl ÀÎÁõ ÁÖ¼Ò
-	 * @return Provider °´Ã¼
+	 * ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Providerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param requestTokenEndpointUrl ï¿½ï¿½Ã» ï¿½ï¿½Å« ï¿½Ö¼ï¿½
+	 * @param accessTokenEndpointUrl ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å« ï¿½Ö¼ï¿½
+	 * @param authorizationWebsiteUrl ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½
+	 * @return Provider ï¿½ï¿½Ã¼
 	 */
 	public static Provider makeProvider(String requestTokenEndpointUrl, String accessTokenEndpointUrl, String authorizationWebsiteUrl) {
 		return new Provider(requestTokenEndpointUrl, accessTokenEndpointUrl, authorizationWebsiteUrl);
 	}
 
 	/**
-	 * Provider¿¡ RequestTokenÀ» ¿äÃ»ÇÏ¿©, RequestToken°ú RequestTokenSecretÀ» ¹Þ¾Æ¿Â´Ù. 
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
-	 * @param provider ÇÁ·Î¹ÙÀÌ´õ °´Ã¼
-	 * @param callbackUrl ÄÝ¹éÁÖ¼Ò
+	 * Providerï¿½ï¿½ RequestTokenï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ï¿ï¿½, RequestTokenï¿½ï¿½ RequestTokenSecretï¿½ï¿½ ï¿½Þ¾Æ¿Â´ï¿½. 
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
+	 * @param provider ï¿½ï¿½ï¿½Î¹ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½Ã¼
+	 * @param callbackUrl ï¿½Ý¹ï¿½ï¿½Ö¼ï¿½
 	 * @return authorize URL
 	 */
 	public static String getRequestToken(Consumer consumer, Provider provider, String callbackUrl) {
@@ -147,10 +147,10 @@ public class OAuth10aUtil {
 	}
 
 	/**
-	 * Provider¿¡ AccessTokenÀ» ¿äÃ»ÇÏ¿©, AccessToken°ú AccessTokenSecretÀ» ¹Þ¾Æ¿Â´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
-	 * @param provider ÇÁ·Î¹ÙÀÌ´õ °´Ã¼
-	 * @param verifier °ËÁõ°ª ¶Ç´Â ÇÉÄÚµå
+	 * Providerï¿½ï¿½ AccessTokenï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ï¿ï¿½, AccessTokenï¿½ï¿½ AccessTokenSecretï¿½ï¿½ ï¿½Þ¾Æ¿Â´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
+	 * @param provider ï¿½ï¿½ï¿½Î¹ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½Ã¼
+	 * @param verifier ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½Úµï¿½
 	 */
 	public static void getAccessToken(Consumer consumer, Provider provider, String verifier) {
 		try {
@@ -161,27 +161,26 @@ public class OAuth10aUtil {
 	}
 
 	/**
-	 * Protected Resource ¿¡ GET ¹æ½ÄÀ¸·Î ¿äÃ»ÇÑ´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
+	 * Protected Resource ï¿½ï¿½ GET ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 * @param url API URL
-	 * @return Result °´Ã¼
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result get(Consumer consumer, String url) {
 		return get(consumer, url, null);
 	}
 
 	/**
-	 * Protected Resource ¿¡ GET ¹æ½ÄÀ¸·Î ¿äÃ»ÇÑ´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
+	 * Protected Resource ï¿½ï¿½ GET ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 * @param url API URL
-	 * @param headerMap Çì´õ
-	 * @return Result °´Ã¼
+	 * @param headerMap ï¿½ï¿½ï¿½
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result get(Consumer consumer, String url, Map<String, String> headerMap) {
 		int statusCode = 0;
 		String content = "";
-		try {
-			HttpClient client = new DefaultHttpClient();
+		try (CloseableHttpClient client = HttpClients.createDefault()) {
 			HttpGet get = new HttpGet(url);
 			if (headerMap != null) {
 				for (Entry<String, String> entry : headerMap.entrySet()) {
@@ -189,11 +188,12 @@ public class OAuth10aUtil {
 				}
 			}
 			consumer.sign(get);
-			HttpResponse responseGet = client.execute(get);
-			statusCode = responseGet.getStatusLine().getStatusCode();
-			HttpEntity resEntityGet = responseGet.getEntity();
-			if (resEntityGet != null) {
-				content = EntityUtils.toString(resEntityGet);
+			try (CloseableHttpResponse responseGet = client.execute(get)) {
+				statusCode = responseGet.getStatusLine().getStatusCode();
+				HttpEntity resEntityGet = responseGet.getEntity();
+				if (resEntityGet != null) {
+					content = EntityUtils.toString(resEntityGet);
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -202,39 +202,38 @@ public class OAuth10aUtil {
 	}
 
 	/**
-	 * Protected Resource ¿¡ POST ¹æ½ÄÀ¸·Î ¿äÃ»ÇÑ´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
+	 * Protected Resource ï¿½ï¿½ POST ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 * @param url API URL
-	 * @return Result °´Ã¼
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(Consumer consumer, String url) {
 		return post(consumer, url, null, (Map<String, String>) null);
 	}
 
 	/**
-	 * Protected Resource ¿¡ POST ¹æ½ÄÀ¸·Î ¿äÃ»ÇÑ´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
+	 * Protected Resource ï¿½ï¿½ POST ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 * @param url API URL
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ
-	 * @return Result °´Ã¼
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(Consumer consumer, String url, Map<String, String> paramMap) {
 		return post(consumer, url, paramMap, (Map<String, String>) null);
 	}
 
 	/**
-	 * Protected Resource ¿¡ POST ¹æ½ÄÀ¸·Î ¿äÃ»ÇÑ´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
+	 * Protected Resource ï¿½ï¿½ POST ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 * @param url API URL
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ
-	 * @param headerMap Çì´õ
-	 * @return Result °´Ã¼
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½
+	 * @param headerMap ï¿½ï¿½ï¿½
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(Consumer consumer, String url, Map<String, String> paramMap, Map<String, String> headerMap) {
 		int statusCode = 0;
 		String content = "";
-		try {
-			HttpClient client = new DefaultHttpClient();
+		try (CloseableHttpClient client = HttpClients.createDefault()) {
 			HttpPost post = new HttpPost(url);
 			if (headerMap != null) {
 				for (Entry<String, String> entry : headerMap.entrySet()) {
@@ -250,11 +249,12 @@ public class OAuth10aUtil {
 			UrlEncodedFormEntity ent = new UrlEncodedFormEntity(params, "UTF-8");
 			post.setEntity(ent);
 			consumer.sign(post);
-			HttpResponse responsePOST = client.execute(post);
-			statusCode = responsePOST.getStatusLine().getStatusCode();
-			HttpEntity resEntity = responsePOST.getEntity();
-			if (resEntity != null) {
-				content = EntityUtils.toString(resEntity);
+			try (CloseableHttpResponse responsePOST = client.execute(post)) {
+				statusCode = responsePOST.getStatusLine().getStatusCode();
+				HttpEntity resEntity = responsePOST.getEntity();
+				if (resEntity != null) {
+					content = EntityUtils.toString(resEntity);
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -263,31 +263,30 @@ public class OAuth10aUtil {
 	}
 
 	/**
-	 * Protected Resource ¿¡ POST ¹æ½ÄÀ¸·Î ¿äÃ»ÇÑ´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
+	 * Protected Resource ï¿½ï¿½ POST ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 * @param url API URL
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ
-	 * @param fileList ÆÄÀÏ
-	 * @return Result °´Ã¼
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½
+	 * @param fileList ï¿½ï¿½ï¿½ï¿½
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(Consumer consumer, String url, Map<String, String> paramMap, List<File> fileList) {
 		return post(consumer, url, paramMap, fileList, null);
 	}
 
 	/**
-	 * Protected Resource ¿¡ POST ¹æ½ÄÀ¸·Î ¿äÃ»ÇÑ´Ù.
-	 * @param consumer ÄÁ½´¸Ó °´Ã¼
+	 * Protected Resource ï¿½ï¿½ POST ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
+	 * @param consumer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 * @param url API URL
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ
-	 * @param fileList ÆÄÀÏ
-	 * @param headerMap Çì´õ
-	 * @return Result °´Ã¼
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½
+	 * @param fileList ï¿½ï¿½ï¿½ï¿½
+	 * @param headerMap ï¿½ï¿½ï¿½
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(Consumer consumer, String url, Map<String, String> paramMap, List<File> fileList, Map<String, String> headerMap) {
 		int statusCode = 0;
 		String content = "";
-		try {
-			HttpClient client = new DefaultHttpClient();
+		try (CloseableHttpClient client = HttpClients.createDefault()) {
 			HttpPost post = new HttpPost(url);
 			if (headerMap != null) {
 				for (Entry<String, String> entry : headerMap.entrySet()) {
@@ -295,24 +294,25 @@ public class OAuth10aUtil {
 				}
 			}
 			consumer.sign(post);
-			MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 			if (paramMap != null) {
 				for (Entry<String, String> entry : paramMap.entrySet()) {
-					reqEntity.addPart(entry.getKey(), new StringBody(entry.getValue()));
+					builder.addTextBody(entry.getKey(), entry.getValue(), ContentType.TEXT_PLAIN);
 				}
 			}
 			if (fileList != null) {
 				for (File file : fileList) {
-					ContentBody contentBody = new FileBody(file);
-					reqEntity.addPart("userfile", contentBody);
+					builder.addPart("userfile", new FileBody(file));
 				}
 			}
-			post.setEntity(reqEntity);
-			HttpResponse response = client.execute(post);
-			statusCode = response.getStatusLine().getStatusCode();
-			HttpEntity resEntity = response.getEntity();
-			if (resEntity != null) {
-				content = EntityUtils.toString(resEntity);
+			post.setEntity(builder.build());
+			try (CloseableHttpResponse response = client.execute(post)) {
+				statusCode = response.getStatusLine().getStatusCode();
+				HttpEntity resEntity = response.getEntity();
+				if (resEntity != null) {
+					content = EntityUtils.toString(resEntity);
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

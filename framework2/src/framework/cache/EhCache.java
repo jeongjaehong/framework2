@@ -5,48 +5,66 @@ package framework.cache;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Expiry;
 
 /**
- * ±âº» Ä³½Ã ±¸ÇöÃ¼ (http://ehcache.org/)
+ * ê¸°ë³¸ ìºì‹œ êµ¬í˜„ì²´ - Caffeine ê¸°ë°˜ (https://github.com/ben-manes/caffeine)
  */
 public class EhCache extends AbstractCache {
 
 	/**
-	 * ½Ì±ÛÅæ °´Ã¼
+	 * ì‹±ê¸€í†¤ ê°ì²´
 	 */
 	private static EhCache _uniqueInstance;
 
 	/**
-	 * Ä³½Ã ¸Å´ÏÀú
+	 * ìºì‹œ ì—”íŠ¸ë¦¬ (ê°’ + TTL ë³´ê´€)
 	 */
-	private final CacheManager _cacheManager;
+	private static class CacheEntry {
+		final Object value;
+		final long expiryNanos;
 
-	/**
-	 * Ä³½Ã ¿ÀºêÁ§Æ®
-	 */
-	private final net.sf.ehcache.Cache _cache;
-
-	/**
-	 * ±âº» Ä³½Ã ÀÌ¸§
-	 */
-	private static final String _CACHE_NAME = "framework2";
-
-	/**
-	 * »ı¼ºÀÚ, ¿ÜºÎ¿¡¼­ °´Ã¼¸¦ ÀÎ½ºÅÏ½ºÈ­ ÇÒ ¼ö ¾øµµ·Ï ¼³Á¤
-	 */
-	private EhCache() {
-		_cacheManager = CacheManager.create();
-		_cacheManager.addCache(_CACHE_NAME);
-		_cache = _cacheManager.getCache(_CACHE_NAME);
+		CacheEntry(Object value, int seconds) {
+			this.value = value;
+			this.expiryNanos = TimeUnit.SECONDS.toNanos(seconds);
+		}
 	}
 
 	/**
-	 * °´Ã¼ÀÇ ÀÎ½ºÅÏ½º¸¦ ¸®ÅÏÇØÁØ´Ù.
+	 * Caffeine ìºì‹œ
+	 */
+	private final Cache<String, CacheEntry> _cache;
+
+	/**
+	 * ìƒì„±ì, ì™¸ë¶€ì—ì„œ ê°ì²´ë¥¼ ì¸ìŠ¤í„´ìŠ¤í™” í•  ìˆ˜ ì—†ìŒ
+	 */
+	private EhCache() {
+		_cache = Caffeine.newBuilder()
+			.expireAfter(new Expiry<String, CacheEntry>() {
+				@Override
+				public long expireAfterCreate(String key, CacheEntry entry, long currentTime) {
+					return entry.expiryNanos;
+				}
+				@Override
+				public long expireAfterUpdate(String key, CacheEntry entry, long currentTime, long currentDuration) {
+					return entry.expiryNanos;
+				}
+				@Override
+				public long expireAfterRead(String key, CacheEntry entry, long currentTime, long currentDuration) {
+					return currentDuration;
+				}
+			})
+			.build();
+	}
+
+	/**
+	 * ê°ì²´ì˜ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ë¦¬í„´í•´ì¤€ë‹¤.
 	 *
-	 * @return EhCache °´Ã¼ÀÇ ÀÎ½ºÅÏ½º
+	 * @return EhCache ê°ì²´ì˜ ì¸ìŠ¤í„´ìŠ¤
 	 */
 	public synchronized static EhCache getInstance() {
 		if (_uniqueInstance == null) {
@@ -57,15 +75,13 @@ public class EhCache extends AbstractCache {
 
 	@Override
 	public void set(String key, Object value, int seconds) {
-		Element e = new Element(key, value);
-		e.setTimeToLive(seconds);
-		_cache.put(e);
+		_cache.put(key, new CacheEntry(value, seconds));
 	}
 
 	@Override
 	public Object get(String key) {
-		Element e = _cache.get(key);
-		return (e == null) ? null : e.getObjectValue();
+		CacheEntry entry = _cache.getIfPresent(key);
+		return (entry == null) ? null : entry.value;
 	}
 
 	@Override
@@ -79,37 +95,33 @@ public class EhCache extends AbstractCache {
 
 	@Override
 	public synchronized long incr(String key, int by) {
-		Element e = _cache.get(key);
-		if (e == null) {
+		CacheEntry entry = _cache.getIfPresent(key);
+		if (entry == null) {
 			return -1;
 		}
-		long newValue = ((Number) e.getObjectValue()).longValue() + by;
-		Element newE = new Element(key, newValue);
-		newE.setTimeToLive(e.getTimeToLive());
-		_cache.put(newE);
+		long newValue = ((Number) entry.value).longValue() + by;
+		_cache.put(key, new CacheEntry(newValue, (int) TimeUnit.NANOSECONDS.toSeconds(entry.expiryNanos)));
 		return newValue;
 	}
 
 	@Override
 	public synchronized long decr(String key, int by) {
-		Element e = _cache.get(key);
-		if (e == null) {
+		CacheEntry entry = _cache.getIfPresent(key);
+		if (entry == null) {
 			return -1;
 		}
-		long newValue = ((Number) e.getObjectValue()).longValue() - by;
-		Element newE = new Element(key, newValue);
-		newE.setTimeToLive(e.getTimeToLive());
-		_cache.put(newE);
+		long newValue = ((Number) entry.value).longValue() - by;
+		_cache.put(key, new CacheEntry(newValue, (int) TimeUnit.NANOSECONDS.toSeconds(entry.expiryNanos)));
 		return newValue;
 	}
 
 	@Override
 	public void delete(String key) {
-		_cache.remove(key);
+		_cache.invalidate(key);
 	}
 
 	@Override
 	public void clear() {
-		_cache.removeAll();
+		_cache.invalidateAll();
 	}
 }

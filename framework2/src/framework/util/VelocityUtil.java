@@ -13,31 +13,31 @@ import java.util.ResourceBundle;
 import jakarta.servlet.http.HttpServlet;
 
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 
 import framework.action.Box;
 
 /**
- * Velocity¸¦ ÀÌ¿ëÇÑ ÅÛÇÃ¸´ Ã³¸® ¶óÀÌºê·¯¸®
+ * Velocityï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½
  */
 public class VelocityUtil {
 
 	/**
-	 * »ý¼ºÀÚ, ¿ÜºÎ¿¡¼­ °´Ã¼¸¦ ÀÎ½ºÅÏ½ºÈ­ ÇÒ ¼ö ¾øµµ·Ï ¼³Á¤
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 */
 	private VelocityUtil() {
 	}
 
 	/**
-	 * action.properties ÆÄÀÏ¿¡ ¼³Á¤µÈ key¿Í ¿¬°áµÈ ÅÛÇÃ¸´ ÆÄÀÏ¿¡¼­ statement¿¡ Á¤ÀÇµÈ COMMANDÀÇ ¹®ÀÚ¿­À» ÆÄ¶ó¹ÌÅÍ¸¦
-	 * Àû¿ëÇÑ ¹®ÀÚ¿­À» »ý¼ºÇÑ´Ù. VelocityUtil.evalutate°ú µ¿ÀÏ
+	 * action.properties ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ keyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ statementï¿½ï¿½ ï¿½ï¿½ï¿½Çµï¿½ COMMANDï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í¸ï¿½
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. VelocityUtil.evalutateï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 * <br>
-	 * Sql ¹®Àå»ý¼º ¹× ÀÌ¸ÞÀÏ ¹ß¼ÛÀ» À§ÇÑ ÅÛÇÃ¸´ »ý¼ºÇÒ¶§ ÀÀ¿ëÇÒ ¼ö ÀÖ´Ù.
-	 * @param servlet ¼­ºí¸´ °´Ã¼
-	 * @param key action.properties¿¡ µî·ÏÇÑ ÅÛÇÃ¸´ÀÇ Å° ¹®ÀÚ¿­
-	 * @param statement ¹®Àå½Äº° ¹®ÀÚ¿­
-	 * @param param ÆÄ¶ó¹ÌÅÍ Box °´Ã¼
-	 * @return ÅÛÇÃ¸´ÀÌ Àû¿ëµÈ ¹®ÀÚ¿­
+	 * Sql ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
+	 * @param servlet ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
+	 * @param key action.propertiesï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ Å° ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @param statement ï¿½ï¿½ï¿½ï¿½Äºï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @param param ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ Box ï¿½ï¿½Ã¼
+	 * @return ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 * @throws Exception Exception
 	 */
 	public static String render(HttpServlet servlet, String key, String statement, Box param) throws Exception {
@@ -45,19 +45,20 @@ public class VelocityUtil {
 	}
 
 	/**
-	 * action.properties ÆÄÀÏ¿¡ ¼³Á¤µÈ key¿Í ¿¬°áµÈ ÅÛÇÃ¸´ ÆÄÀÏ¿¡¼­ statement¿¡ Á¤ÀÇµÈ COMMANDÀÇ ¹®ÀÚ¿­À» ÆÄ¶ó¹ÌÅÍ¸¦
-	 * Àû¿ëÇÑ ¹®ÀÚ¿­À» »ý¼ºÇÑ´Ù.
+	 * action.properties ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ keyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ statementï¿½ï¿½ ï¿½ï¿½ï¿½Çµï¿½ COMMANDï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í¸ï¿½
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * Sql ¹®Àå»ý¼º ¹× ÀÌ¸ÞÀÏ ¹ß¼ÛÀ» À§ÇÑ ÅÛÇÃ¸´ »ý¼ºÇÒ¶§ ÀÀ¿ëÇÒ ¼ö ÀÖ´Ù.
-	 * @param servlet ¼­ºí¸´ °´Ã¼
-	 * @param key action.properties¿¡ µî·ÏÇÑ ÅÛÇÃ¸´ÀÇ Å° ¹®ÀÚ¿­
-	 * @param statement ¹®Àå½Äº° ¹®ÀÚ¿­
-	 * @param param ÆÄ¶ó¹ÌÅÍ Box °´Ã¼
-	 * @return ÅÛÇÃ¸´ÀÌ Àû¿ëµÈ ¹®ÀÚ¿­
+	 * Sql ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
+	 * @param servlet ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
+	 * @param key action.propertiesï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ Å° ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @param statement ï¿½ï¿½ï¿½ï¿½Äºï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
+	 * @param param ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ Box ï¿½ï¿½Ã¼
+	 * @return ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½
 	 * @throws Exception Exception
 	 */
 	public static String evaluate(HttpServlet servlet, String key, String statement, Box param) throws Exception {
-		Velocity.init();
+		VelocityEngine ve = new VelocityEngine();
+		ve.init();
 		VelocityContext context = new VelocityContext();
 		context.put("COMMAND", statement);
 		context.put("PARAM", param);
@@ -67,12 +68,12 @@ public class VelocityUtil {
 		StringWriter writer = new StringWriter();
 		String template = readTemplate(servlet, fileName);
 		StringReader reader = new StringReader(template);
-		Velocity.evaluate(context, writer, "framework.util.VelocityUtil", reader);
+		ve.evaluate(context, writer, "framework.util.VelocityUtil", reader);
 		return writer.toString();
 	}
 
 	/**
-	 * ÅÛÇÃ¸´ÆÄÀÏÀ» ÀÐ¾îµéÀÎ´Ù.
+	 * ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½Î´ï¿½.
 	 * @throws IOException
 	 */
 	private static String readTemplate(HttpServlet servlet, String fileName) throws IOException {
@@ -81,7 +82,7 @@ public class VelocityUtil {
 	}
 
 	/**
-	 * ÆÄÀÏÀÇ path¸¦ °¡Áö ÆÄÀÏ¸íÀ¸·Î ÆÄÀÏ ³»¿ë ÀÐ¾î¼­ StringÀ¸·Î ¸®ÅÏÇÑ´Ù
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pathï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾î¼­ Stringï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
 	 * @throws IOException
 	 */
 	private static String read(String pathFile) throws IOException {

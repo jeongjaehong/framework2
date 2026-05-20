@@ -7,55 +7,56 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import framework.config.Configuration;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.JedisShardInfo;
-import redis.clients.jedis.ShardedJedis;
-import redis.clients.jedis.ShardedJedisPool;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
- * Redis Ä³½Ã ±¸ÇöÃ¼ (http://redis.io/)
+ * Redis ìºì‹œ êµ¬í˜„ì²´ (http://redis.io/)
+ * Jedis 4.x/5.x JedisPool API ì‚¬ìš©
  */
 public class Redis extends AbstractCache {
 	/**
-	 * ½Ì±ÛÅæ °´Ã¼
+	 * ì‹±ê¸€í†¤ ê°ì²´
 	 */
 	private static Redis _uniqueInstance;
 
 	/**
-	 * Å¸ÀÓ¾Æ¿ô °ª (ms)
+	 * íƒ€ì„ì•„ì›ƒ ê°’ (ms)
 	 */
 	private static final int _TIMEOUT = 500;
 
 	/**
-	 * Ä³½Ã Å¬¶óÀÌ¾ğÆ® Pool
+	 * ìºì‹œ í´ë¼ì´ì–¸íŠ¸ Pool
 	 */
-	private final ShardedJedisPool _pool;
+	private final JedisPool _pool;
 
 	/**
-	 * »ı¼ºÀÚ, ¿ÜºÎ¿¡¼­ °´Ã¼¸¦ ÀÎ½ºÅÏ½ºÈ­ ÇÒ ¼ö ¾øµµ·Ï ¼³Á¤
+	 * ìƒì„±ì, ì™¸ë¶€ì—ì„œ ê°ì²´ë¥¼ ì¸ìŠ¤í„´ìŠ¤í™” í•  ìˆ˜ ì—†ìŒ
 	 */
 	private Redis() {
-		List<JedisShardInfo> shards;
+		String servers = null;
 		if (Configuration.getInstance().containsKey("redis.servers")) {
-			shards = _getAddresses(Configuration.getInstance().getString("redis.servers"));
+			servers = Configuration.getInstance().getString("redis.servers");
 		} else {
-			throw new RuntimeException("redisÀÇ È£½ºÆ®¼³Á¤ÀÌ ´©¶ôµÇ¾ú½À´Ï´Ù.");
+			throw new RuntimeException("redisì˜ í˜¸ìŠ¤íŠ¸ì •ë³´ê°€ ì„¤ì •ë˜ì—ˆìŠµë‹ˆë‹¤.");
 		}
-		_pool = new ShardedJedisPool(new JedisPoolConfig(), shards);
+		String[] parts = _parsePrimaryAddress(servers);
+		String host = parts[0];
+		int port = Integer.parseInt(parts[1]);
+		JedisPoolConfig poolConfig = new JedisPoolConfig();
+		_pool = new JedisPool(poolConfig, host, port, _TIMEOUT);
 	}
 
 	/**
-	 * °´Ã¼ÀÇ ÀÎ½ºÅÏ½º¸¦ ¸®ÅÏÇØÁØ´Ù.
+	 * ê°ì²´ì˜ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ë¦¬í„´í•´ì¤€ë‹¤.
 	 *
-	 * @return Redis °´Ã¼ÀÇ ÀÎ½ºÅÏ½º
+	 * @return Redis ê°ì²´ì˜ ì¸ìŠ¤í„´ìŠ¤
 	 */
 	public synchronized static Redis getInstance() {
 		if (_uniqueInstance == null) {
@@ -70,18 +71,10 @@ public class Redis extends AbstractCache {
 	}
 
 	public void set(byte[] key, byte[] value, int seconds) {
-		ShardedJedis jedis = null;
-		try {
-			jedis = _pool.getResource();
+		try (Jedis jedis = _pool.getResource()) {
 			jedis.setex(key, seconds, value);
 		} catch (JedisConnectionException e) {
-			if (jedis != null) {
-				_pool.returnBrokenResource(jedis);
-			}
-		} finally {
-			if (jedis != null) {
-				_pool.returnResource(jedis);
-			}
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -91,21 +84,11 @@ public class Redis extends AbstractCache {
 	}
 
 	public Object get(byte[] key) {
-		ShardedJedis jedis = null;
-		Object value = null;
-		try {
-			jedis = _pool.getResource();
-			value = _deserialize(jedis.get(key));
+		try (Jedis jedis = _pool.getResource()) {
+			return _deserialize(jedis.get(key));
 		} catch (JedisConnectionException e) {
-			if (jedis != null) {
-				_pool.returnBrokenResource(jedis);
-			}
-		} finally {
-			if (jedis != null) {
-				_pool.returnResource(jedis);
-			}
+			throw new RuntimeException(e);
 		}
-		return value;
 	}
 
 	@Override
@@ -123,24 +106,11 @@ public class Redis extends AbstractCache {
 	}
 
 	public long incr(byte[] key, int by) {
-		ShardedJedis jedis = null;
-		Long value = null;
-		try {
-			jedis = _pool.getResource();
-			value = jedis.incrBy(key, by);
+		try (Jedis jedis = _pool.getResource()) {
+			return jedis.incrBy(key, by);
 		} catch (JedisConnectionException e) {
-			if (jedis != null) {
-				_pool.returnBrokenResource(jedis);
-			}
-		} finally {
-			if (jedis != null) {
-				_pool.returnResource(jedis);
-			}
+			return -1;
 		}
-		if (value == null) {
-			value = Long.valueOf(-1);
-		}
-		return value;
 	}
 
 	@Override
@@ -149,92 +119,59 @@ public class Redis extends AbstractCache {
 	}
 
 	public long decr(byte[] key, int by) {
-		ShardedJedis jedis = null;
-		Long value = null;
-		try {
-			jedis = _pool.getResource();
-			value = jedis.decrBy(key, by);
+		try (Jedis jedis = _pool.getResource()) {
+			return jedis.decrBy(key, by);
 		} catch (JedisConnectionException e) {
-			if (jedis != null) {
-				_pool.returnBrokenResource(jedis);
-			}
-		} finally {
-			if (jedis != null) {
-				_pool.returnResource(jedis);
-			}
+			return -1;
 		}
-		if (value == null) {
-			value = Long.valueOf(-1);
-		}
-		return value;
 	}
 
 	@Override
 	public void delete(String key) {
-		ShardedJedis jedis = null;
-		try {
-			jedis = _pool.getResource();
+		try (Jedis jedis = _pool.getResource()) {
 			jedis.del(key);
 		} catch (JedisConnectionException e) {
-			if (jedis != null) {
-				_pool.returnBrokenResource(jedis);
-			}
-		} finally {
-			if (jedis != null) {
-				_pool.returnResource(jedis);
-			}
+			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
 	public void clear() {
-		ShardedJedis jedis = null;
-		try {
-			jedis = _pool.getResource();
-			for (Jedis j : jedis.getAllShards()) {
-				j.flushAll();
-			}
+		try (Jedis jedis = _pool.getResource()) {
+			jedis.flushAll();
 		} catch (JedisConnectionException e) {
-			if (jedis != null) {
-				_pool.returnBrokenResource(jedis);
-			}
-		} finally {
-			if (jedis != null) {
-				_pool.returnResource(jedis);
-			}
+			throw new RuntimeException(e);
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////Private ¸Ş¼Òµå
+	////////////////////////////////////////////////////////////////////////////////////////Private ë©”ì†Œë“œ
 
 	/**
-	 * ¹®ÀÚ¿­¿¡¼­ redis È£½ºÆ® ÁÖ¼Ò¸¦ ÆÄ½ÌÇÏ¿© ¸®ÅÏÇÑ´Ù.
-	 * @param str ½ºÆäÀÌ½º·Î ±¸ºĞµÈ ÁÖ¼Ò¹®ÀÚ¿­
-	 * @return »şµåÁÖ¼Ò°´Ã¼
+	 * ë¬¸ìì—´ì—ì„œ ì²« ë²ˆì§¸ redis í˜¸ìŠ¤íŠ¸ ì£¼ì†Œë¥¼ íŒŒì‹±í•˜ì—¬ ë°˜í™˜í•œë‹¤.
+	 * @param str ê³µë°±/ì‰¼í‘œë¡œ êµ¬ë¶„ëœ ì£¼ì†Œë¬¸ìì—´
+	 * @return [host, port] ë°°ì—´
 	 */
-	private List<JedisShardInfo> _getAddresses(String str) {
+	private String[] _parsePrimaryAddress(String str) {
 		if (str == null || "".equals(str.trim())) {
-			throw new IllegalArgumentException("redisÀÇ È£½ºÆ®¼³Á¤ÀÌ ´©¶ôµÇ¾ú½À´Ï´Ù.");
+			throw new IllegalArgumentException("redisì˜ í˜¸ìŠ¤íŠ¸ì •ë³´ê°€ ì„¤ì •ë˜ì—ˆìŠµë‹ˆë‹¤.");
 		}
-		ArrayList<JedisShardInfo> shards = new ArrayList<JedisShardInfo>();
 		for (String addr : str.split("(?:\\s|,)+")) {
 			if ("".equals(addr)) {
 				continue;
 			}
 			int sep = addr.lastIndexOf(':');
 			if (sep < 1) {
-				throw new IllegalArgumentException("¼­¹ö¼³Á¤ÀÌ Àß¸øµÇ¾ú½À´Ï´Ù. Çü½Ä=>È£½ºÆ®:Æ÷Æ®");
+				throw new IllegalArgumentException("ì£¼ì†Œí˜•ì‹ì´ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤. í˜•ì‹=>í˜¸ìŠ¤íŠ¸:í¬íŠ¸");
 			}
-			shards.add(new JedisShardInfo(addr.substring(0, sep), Integer.valueOf(addr.substring(sep + 1)), _TIMEOUT));
+			return new String[] { addr.substring(0, sep), addr.substring(sep + 1) };
 		}
-		assert !shards.isEmpty() : "redisÀÇ È£½ºÆ®¼³Á¤ÀÌ ´©¶ôµÇ¾ú½À´Ï´Ù.";
-		return shards;
+		throw new IllegalArgumentException("redisì˜ í˜¸ìŠ¤íŠ¸ì •ë³´ê°€ ì„¤ì •ë˜ì—ˆìŠµë‹ˆë‹¤.");
 	}
 
 	/**
-	 * °´Ã¼¸¦ ¹ÙÀÌÆ®¹è¿­·Î Á÷·ÄÈ­ ÇÑ´Ù.
-	 * @param obj Á÷·ÄÈ­ÇÒ °´Ã¼
-	 * @return ¹ÙÀÌÆ®¹è¿­
+	 * ê°ì²´ë¥¼ ë°”ì´íŠ¸ë°°ì—´ë¡œ ì§ë ¬í™” í•œë‹¤.
+	 * @param obj ì§ë ¬í™”í•  ê°ì²´
+	 * @return ë°”ì´íŠ¸ë°°ì—´
 	 */
 	public byte[] _serialize(Object obj) {
 		ObjectOutputStream oos = null;
@@ -251,9 +188,9 @@ public class Redis extends AbstractCache {
 	}
 
 	/**
-	 * ¹ÙÀÌÆ®¹è¿­À» °´Ã¼·Î ¿ªÁ÷·ÄÈ­ ÇÑ´Ù.
-	 * @param bytes ¹ÙÀÌÆ®¹è¿­
-	 * @return ¿ªÁ÷·ÄÈ­µÈ °´Ã¼
+	 * ë°”ì´íŠ¸ë°°ì—´ì„ ê°ì²´ë¡œ ì—­ì§ë ¬í™” í•œë‹¤.
+	 * @param bytes ë°”ì´íŠ¸ë°°ì—´
+	 * @return ì—­ì§ë ¬í™”ëœ ê°ì²´
 	 */
 	public Object _deserialize(byte[] bytes) {
 		ByteArrayInputStream bais = null;

@@ -9,32 +9,32 @@ import java.util.Map.Entry;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- * HTTP Å¬¶óÀÌ¾ðÆ®ÀÇ ±â´ÉÀ» ÀÌ¿ëÇÒ ¼ö ÀÖ´Â À¯Æ¿¸®Æ¼ Å¬·¡½ºÀÌ´Ù.
+ * HTTP Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Æ¿ï¿½ï¿½Æ¼ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½.
  */
 public class HttpUtil {
 
 	/**
-	 * »ý¼ºÀÚ, ¿ÜºÎ¿¡¼­ °´Ã¼¸¦ ÀÎ½ºÅÏ½ºÈ­ ÇÒ ¼ö ¾øµµ·Ï ¼³Á¤
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 */
 	private HttpUtil() {
 	}
 
 	/**
-	 * Result °´Ã¼
+	 * Result ï¿½ï¿½Ã¼
 	 */
 	public static class Result {
 		private int _statusCode;
@@ -65,80 +65,73 @@ public class HttpUtil {
 	}
 
 	/**
-	 * url À» Get ¹æ½ÄÀ¸·Î È£ÃâÇÏ°í °á°ú¸¦ ¸®ÅÏÇÑ´Ù.
-	 * @param url ÁÖ¼Ò
-	 * @return Result °´Ã¼
+	 * url ï¿½ï¿½ Get ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param url ï¿½Ö¼ï¿½
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result get(String url) {
 		return get(url, null);
 	}
 
 	/**
-	 * url À» Get ¹æ½ÄÀ¸·Î È£ÃâÇÏ°í °á°ú¸¦ ¸®ÅÏÇÑ´Ù.
-	 * @param url ÁÖ¼Ò
-	 * @param headerMap Çì´õ¸Ê°´Ã¼
-	 * @return Result °´Ã¼
+	 * url ï¿½ï¿½ Get ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param url ï¿½Ö¼ï¿½
+	 * @param headerMap ï¿½ï¿½ï¿½ï¿½Ê°ï¿½Ã¼
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result get(String url, Map<String, String> headerMap) {
 		int statusCode = 0;
 		String content = "";
-		HttpClient httpClient = null;
-		try {
-			httpClient = new DefaultHttpClient();
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpGet httpGet = new HttpGet(url);
 			if (headerMap != null) {
 				for (Entry<String, String> entry : headerMap.entrySet()) {
 					httpGet.addHeader(entry.getKey(), entry.getValue());
 				}
 			}
-			HttpResponse response = httpClient.execute(httpGet);
-			statusCode = response.getStatusLine().getStatusCode();
-			HttpEntity resEntity = response.getEntity();
-			if (resEntity != null) {
-				content = EntityUtils.toString(resEntity);
+			try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+				statusCode = response.getStatusLine().getStatusCode();
+				HttpEntity resEntity = response.getEntity();
+				if (resEntity != null) {
+					content = EntityUtils.toString(resEntity);
+				}
 			}
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (httpClient != null) {
-				httpClient.getConnectionManager().shutdown();
-			}
 		}
 		return new Result(statusCode, content);
 	}
 
 	/**
-	 * url À» Post ¹æ½ÄÀ¸·Î È£ÃâÇÏ°í °á°ú¸¦ ¸®ÅÏÇÑ´Ù.
-	 * @param url ÁÖ¼Ò
-	 * @return Result °´Ã¼
+	 * url ï¿½ï¿½ Post ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param url ï¿½Ö¼ï¿½
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(String url) {
 		return post(url, null, (Map<String, String>) null);
 	}
 
 	/**
-	 * url À» Post ¹æ½ÄÀ¸·Î È£ÃâÇÏ°í °á°ú¸¦ ¸®ÅÏÇÑ´Ù.
-	 * @param url ÁÖ¼Ò
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ¸Ê°´Ã¼
-	 * @return Result °´Ã¼
+	 * url ï¿½ï¿½ Post ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param url ï¿½Ö¼ï¿½
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½Í¸Ê°ï¿½Ã¼
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(String url, Map<String, String> paramMap) {
 		return post(url, paramMap, (Map<String, String>) null);
 	}
 
 	/**
-	 * url À» Post ¹æ½ÄÀ¸·Î È£ÃâÇÏ°í °á°ú¸¦ ¸®ÅÏÇÑ´Ù.
-	 * @param url ÁÖ¼Ò
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ¸Ê°´Ã¼
-	 * @param headerMap Çì´õ¸Ê°´Ã¼
-	 * @return Result °´Ã¼
+	 * url ï¿½ï¿½ Post ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	 * @param url ï¿½Ö¼ï¿½
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½Í¸Ê°ï¿½Ã¼
+	 * @param headerMap ï¿½ï¿½ï¿½ï¿½Ê°ï¿½Ã¼
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(String url, Map<String, String> paramMap, Map<String, String> headerMap) {
 		int statusCode = 0;
 		String content = "";
-		HttpClient httpClient = null;
-		try {
-			httpClient = new DefaultHttpClient();
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPost httpPost = new HttpPost(url);
 			if (headerMap != null) {
 				for (Entry<String, String> entry : headerMap.entrySet()) {
@@ -153,78 +146,70 @@ public class HttpUtil {
 			}
 			UrlEncodedFormEntity ent = new UrlEncodedFormEntity(params, "UTF-8");
 			httpPost.setEntity(ent);
-			HttpResponse response = httpClient.execute(httpPost);
-			statusCode = response.getStatusLine().getStatusCode();
-			HttpEntity resEntity = response.getEntity();
-			if (resEntity != null) {
-				content = EntityUtils.toString(resEntity);
+			try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+				statusCode = response.getStatusLine().getStatusCode();
+				HttpEntity resEntity = response.getEntity();
+				if (resEntity != null) {
+					content = EntityUtils.toString(resEntity);
+				}
 			}
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (httpClient != null) {
-				httpClient.getConnectionManager().shutdown();
-			}
 		}
 		return new Result(statusCode, content);
 	}
 
 	/**
-	 * url À» Post ¹æ½ÄÀ¸·Î È£ÃâÇÏ°í °á°ú¸¦ ¸®ÅÏÇÑ´Ù. (Ã·ºÎÆÄÀÏ Æ÷ÇÔ)
-	 * @param url ÁÖ¼Ò
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ¸Ê°´Ã¼
-	 * @param fileList ÆÄÀÏ¸®½ºÆ®
-	 * @return Result °´Ã¼
+	 * url ï¿½ï¿½ Post ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. (Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+	 * @param url ï¿½Ö¼ï¿½
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½Í¸Ê°ï¿½Ã¼
+	 * @param fileList ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½Æ®
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(String url, Map<String, String> paramMap, List<File> fileList) {
 		return post(url, paramMap, fileList, null);
 	}
 
 	/**
-	 * url À» Post ¹æ½ÄÀ¸·Î È£ÃâÇÏ°í °á°ú¸¦ ¸®ÅÏÇÑ´Ù. (Ã·ºÎÆÄÀÏ Æ÷ÇÔ)
-	 * @param url ÁÖ¼Ò
-	 * @param paramMap ÆÄ¶ó¹ÌÅÍ¸Ê°´Ã¼
-	 * @param fileList ÆÄÀÏ¸®½ºÆ®
-	 * @param headerMap Çì´õ¸Ê°´Ã¼
-	 * @return Result °´Ã¼
+	 * url ï¿½ï¿½ Post ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. (Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+	 * @param url ï¿½Ö¼ï¿½
+	 * @param paramMap ï¿½Ä¶ï¿½ï¿½ï¿½Í¸Ê°ï¿½Ã¼
+	 * @param fileList ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½Æ®
+	 * @param headerMap ï¿½ï¿½ï¿½ï¿½Ê°ï¿½Ã¼
+	 * @return Result ï¿½ï¿½Ã¼
 	 */
 	public static Result post(String url, Map<String, String> paramMap, List<File> fileList, Map<String, String> headerMap) {
 		int statusCode = 0;
 		String content = "";
-		HttpClient httpClient = null;
-		try {
-			httpClient = new DefaultHttpClient();
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPost httpPost = new HttpPost(url);
 			if (headerMap != null) {
 				for (Entry<String, String> entry : headerMap.entrySet()) {
 					httpPost.addHeader(entry.getKey(), entry.getValue());
 				}
 			}
-			MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 			if (paramMap != null) {
 				for (Entry<String, String> entry : paramMap.entrySet()) {
-					reqEntity.addPart(entry.getKey(), new StringBody(entry.getValue()));
+					builder.addTextBody(entry.getKey(), entry.getValue(), ContentType.TEXT_PLAIN);
 				}
 			}
 			if (fileList != null) {
 				for (File file : fileList) {
-					ContentBody contentBody = new FileBody(file);
-					reqEntity.addPart("userfile", contentBody);
+					builder.addPart("userfile", new FileBody(file));
 				}
 			}
-			httpPost.setEntity(reqEntity);
-			HttpResponse response = httpClient.execute(httpPost);
-			statusCode = response.getStatusLine().getStatusCode();
-			HttpEntity resEntity = response.getEntity();
-			if (resEntity != null) {
-				content = EntityUtils.toString(resEntity);
+			httpPost.setEntity(builder.build());
+			try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+				statusCode = response.getStatusLine().getStatusCode();
+				HttpEntity resEntity = response.getEntity();
+				if (resEntity != null) {
+					content = EntityUtils.toString(resEntity);
+				}
 			}
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (httpClient != null) {
-				httpClient.getConnectionManager().shutdown();
-			}
 		}
 		return new Result(statusCode, content);
 	}

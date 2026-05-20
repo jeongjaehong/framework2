@@ -8,55 +8,55 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.Authenticator;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
-import com.sun.mail.util.MailSSLSocketFactory;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.Authenticator;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeUtility;
+import org.eclipse.angus.mail.util.MailSSLSocketFactory;
 
 
 /**
- * JavaMailÀ» ÀÌ¿ëÇØ ¸ÞÀÏÀ» ¹ß¼ÛÇÏ´Â À¯Æ¿¸®Æ¼ Å¬·¡½ºÀÌ´Ù.
+ * JavaMailï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Æ¿ï¿½ï¿½Æ¼ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½.
  */
 public class EmailUtil {
 
 	/**
-	 * »ý¼ºÀÚ, ¿ÜºÎ¿¡¼­ °´Ã¼¸¦ ÀÎ½ºÅÏ½ºÈ­ ÇÒ ¼ö ¾øµµ·Ï ¼³Á¤
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	 */
 	private EmailUtil() {
 	}
 
 	/**
-	 * ±âº» ÀÎÄÚµù °ª
+	 * ï¿½âº» ï¿½ï¿½ï¿½Úµï¿½ ï¿½ï¿½
 	 */
 	private static final String DEFAULT_CHARSET = "euc-kr";
 
-	//////////////////////////////////////////////////////////////////////////////////////////SMTP¼­¹ö°¡ ÀÎÁõÀÌ ÇÊ¿äÇÑ °æ¿ì
+	//////////////////////////////////////////////////////////////////////////////////////////SMTPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõÀ» ÅëÇÏ¿© ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailAuth("mail.xxx.co.kr", "25", "id", "password", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailAuth("mail.xxx.co.kr", "25", "id", "password", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿");
 	 *
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param smtpUser º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾ÆÀÌµð
-	 * @param smtpPassword º¸³»´Â SMTP ¼­¹ö ÀÎÁõºñ¹Ð¹øÈ£
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param smtpUser ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
+	 * @param smtpPassword ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -66,19 +66,19 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõÀ» ÅëÇÏ¿© ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù. (º¸¾È¿¬°á-SSL ÀÌ ÇÊ¿äÇÒ¶§)
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½. (ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½-SSL ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ò¶ï¿½)
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailAuthSSL("mail.xxx.co.kr", "465", "id", "password", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailAuthSSL("mail.xxx.co.kr", "465", "id", "password", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿");
 	 *
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param smtpUser º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾ÆÀÌµð
-	 * @param smtpPassword º¸³»´Â SMTP ¼­¹ö ÀÎÁõºñ¹Ð¹øÈ£
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param smtpUser ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
+	 * @param smtpPassword ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -91,20 +91,20 @@ public class EmailUtil {
 		sendMailAuthSSL(smtpHost, smtpPort, smtpUser, smtpPassword, subject, content, toEmail, bccEmails, fromEmail, fromName, DEFAULT_CHARSET, null);
 	}
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõÀ» ÅëÇÏ¿© ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailAuth("mail.xxx.co.kr", "25", "id", "password", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailAuth("mail.xxx.co.kr", "25", "id", "password", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr");
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param smtpUser º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾ÆÀÌµð
-	 * @param smtpPassword º¸³»´Â SMTP ¼­¹ö ÀÎÁõºñ¹Ð¹øÈ£
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param smtpUser ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
+	 * @param smtpPassword ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -114,20 +114,20 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõÀ» ÅëÇÏ¿© ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù. (º¸¾È¿¬°á-SSL ÀÌ ÇÊ¿äÇÒ¶§)
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½. (ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½-SSL ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ò¶ï¿½)
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailAuthSSL("mail.xxx.co.kr", "465", "id", "password", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailAuthSSL("mail.xxx.co.kr", "465", "id", "password", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr");
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param smtpUser º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾ÆÀÌµð
-	 * @param smtpPassword º¸³»´Â SMTP ¼­¹ö ÀÎÁõºñ¹Ð¹øÈ£
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param smtpUser ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
+	 * @param smtpPassword ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -141,21 +141,21 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõÀ» ÅëÇÏ¿© ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailAuth("mail.xxx.co.kr", "25", "id", "password", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr", new File[] { f1, f2 });
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailAuth("mail.xxx.co.kr", "25", "id", "password", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr", new File[] { f1, f2 });
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param smtpUser º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾ÆÀÌµð
-	 * @param smtpPassword º¸³»´Â SMTP ¼­¹ö ÀÎÁõºñ¹Ð¹øÈ£
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
-	 * @param attachFiles Ã·ºÎÆÄÀÏ ¹è¿­
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param smtpUser ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
+	 * @param smtpPassword ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
+	 * @param attachFiles Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -172,27 +172,27 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõÀ» ÅëÇÏ¿© ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù. (º¸¾È¿¬°á-SSL ÀÌ ÇÊ¿äÇÒ¶§)
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½. (ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½-SSL ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ò¶ï¿½)
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailAuthSSL("mail.xxx.co.kr", "465", "id", "password", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr", new File[] { f1, f2 });
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailAuthSSL("mail.xxx.co.kr", "465", "id", "password", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr", new File[] { f1, f2 });
 	 *
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param smtpUser º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾ÆÀÌµð
-	 * @param smtpPassword º¸³»´Â SMTP ¼­¹ö ÀÎÁõºñ¹Ð¹øÈ£
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
-	 * @param attachFiles Ã·ºÎÆÄÀÏ ¹è¿­
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param smtpUser ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
+	 * @param smtpPassword ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
+	 * @param attachFiles Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
 	 */
 	public static void sendMailAuthSSL(String smtpHost, String smtpPort, String smtpUser, String smtpPassword, String subject, String content, String toEmail, String[] bccEmails, String fromEmail, String fromName, String charset, File[] attachFiles) throws UnsupportedEncodingException, MessagingException {
-		// ¼ûÀºÂüÁ¶ Ãß°¡. 
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½. 
 		sendMailAuthSSL( smtpHost,  smtpPort,  smtpUser,  smtpPassword,  subject,  content,  toEmail, bccEmails,  fromEmail,  fromName,  charset,  attachFiles, false) ;
 	}
 
@@ -209,11 +209,11 @@ public class EmailUtil {
 		if(debug) props.put("mail.smtp.debug", true);
 		
 		props.put("mail.smtp.from", fromEmail);
-		// tls »ç¿ë½Ã(ssl À» »ç¿ëÇÒ °æ¿ì¿¡´Â ÁÖ¼®)
+		// tls ï¿½ï¿½ï¿½ï¿½(ssl ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½Ö¼ï¿½)
 		props.put("mail.smtp.starttls.enable", true);
-		// ssl »ç¿ë½Ã(ÀÌ¶§´Â º¸Åë port 465)
+		// ssl ï¿½ï¿½ï¿½ï¿½(ï¿½Ì¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ port 465)
 		props.put("mail.smtp.ssl.enable", true);
-		// ³×ÀÌ¹ö ¼­¹ö¿Í ssl Åë½ÅÀÌ µÇÁö ¾ÊÀ» °æ¿ì Ãß°¡
+		// ï¿½ï¿½ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ssl ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		//props.put("mail.smtp.ssl.checkserveridentity", false);
 		//props.put("mail.smtp.ssl.trust", "smtp.worksmobile.com");
@@ -226,7 +226,7 @@ public class EmailUtil {
 			sf.setTrustAllHosts(true);
 			props.put("mail.smtp.ssl.socketFactory", sf);
 		} catch (GeneralSecurityException e) {
-			throw new MessagingException("SSL ¼³Á¤ ¿À·ù", e);
+			throw new MessagingException("SSL ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½", e);
 		}
 
 		props.put("mail.smtp.socketFactory.fallback", false);
@@ -238,20 +238,20 @@ public class EmailUtil {
 		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session, bccEmails);
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////SMTP¼­¹ö°¡ ÀÎÁõÀÌ ÇÊ¿ä¾ø´Â °æ¿ì
+	//////////////////////////////////////////////////////////////////////////////////////////SMTPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾øÀÌ ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailNoAuth("mail.xxx.co.kr", "25", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailNoAuth("mail.xxx.co.kr", "25", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿");
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -261,17 +261,17 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾øÀÌ ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù. (º¸¾È¿¬°á-SSL ÀÌ ÇÊ¿äÇÒ¶§)
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½. (ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½-SSL ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ò¶ï¿½)
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailNoAuthSSL("mail.xxx.co.kr", "465", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailNoAuthSSL("mail.xxx.co.kr", "465", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿");
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -281,18 +281,18 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾øÀÌ ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailNoAuth("mail.xxx.co.kr", "25", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailNoAuth("mail.xxx.co.kr", "25", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr");
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -302,18 +302,18 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾øÀÌ ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù. (º¸¾È¿¬°á-SSL ÀÌ ÇÊ¿äÇÒ¶§)
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½. (ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½-SSL ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ò¶ï¿½)
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailNoAuthSSL("mail.xxx.co.kr", "465", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr");
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailNoAuthSSL("mail.xxx.co.kr", "465", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr");
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -323,19 +323,19 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾øÀÌ ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù.
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½.
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailNoAuth("mail.xxx.co.kr", "25", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr", new File[] { f1, f2 });
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailNoAuth("mail.xxx.co.kr", "25", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr", new File[] { f1, f2 });
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
-	 * @param attachFiles Ã·ºÎÆÄÀÏ ¹è¿­
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
+	 * @param attachFiles Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -350,19 +350,19 @@ public class EmailUtil {
 	}
 
 	/**
-	 * º¸³»´Â SMTP ¼­¹ö ÀÎÁõ¾øÀÌ ÀüÀÚ¸ÞÀÏÀ» ¹ß¼ÛÇÑ´Ù. (º¸¾È¿¬°á-SSL ÀÌ ÇÊ¿äÇÒ¶§)
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¼ï¿½ï¿½Ñ´ï¿½. (ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½-SSL ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ò¶ï¿½)
 	 * <br>
-	 * ex) receiver@xxx.co.kr °¡ sender@xxx.co.kr ¿¡°Ô ¸ÞÀÏÀ» º¸³»´Â °æ¿ì: EmailUtil.sendMailNoAuthSSL("mail.xxx.co.kr", "465", "Á¦¸ñ", "³»¿ë", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«±æµ¿", "euc-kr", new File[] { f1, f2 });
+	 * ex) receiver@xxx.co.kr ï¿½ï¿½ sender@xxx.co.kr ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: EmailUtil.sendMailNoAuthSSL("mail.xxx.co.kr", "465", "ï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "receiver@xxx.co.kr", "sender@xxx.co.kr", "È«ï¿½æµ¿", "euc-kr", new File[] { f1, f2 });
 	
-	 * @param smtpHost º¸³»´Â SMTP ¼­¹öÁÖ¼Ò
-	 * @param smtpPort º¸³»´Â SMTP Æ÷Æ®
-	 * @param subject ¸ÞÀÏÁ¦¸ñ
-	 * @param content ¸ÞÀÏ³»¿ë
-	 * @param toEmail ¹Þ´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromEmail º¸³»´Â»ç¶÷ ¸ÞÀÏÁÖ¼Ò
-	 * @param fromName º¸³»´Â»ç¶÷ ÀÌ¸§
-	 * @param charset ÀÎÄÚµù Ä³¸¯ÅÍ¼Â
-	 * @param attachFiles Ã·ºÎÆÄÀÏ ¹è¿­
+	 * @param smtpHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param smtpPort ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SMTP ï¿½ï¿½Æ®
+	 * @param subject ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param content ï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½
+	 * @param toEmail ï¿½Þ´Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromEmail ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½
+	 * @param fromName ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½ï¿½ ï¿½Ì¸ï¿½
+	 * @param charset ï¿½ï¿½ï¿½Úµï¿½ Ä³ï¿½ï¿½ï¿½Í¼ï¿½
+	 * @param attachFiles Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­
 	 *
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 * @throws MessagingException MessagingException
@@ -377,14 +377,14 @@ public class EmailUtil {
 		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session);
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////Private ¸Þ¼Òµå ¹× °´Ã¼
+	//////////////////////////////////////////////////////////////////////////////////////////Private ï¿½Þ¼Òµï¿½ ï¿½ï¿½ ï¿½ï¿½Ã¼
 
 	private static void sendMail ( String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles, Session session) throws UnsupportedEncodingException, MessagingException {
 		sendMail(subject, content, toEmail, fromEmail, fromName, charset, attachFiles, session, null);
 	}
 	
 	/**
-	 * ¸ÞÀÏ¹ß¼Û ¹× Ã·ºÎÆÄÀÏ Ã³¸®
+	 * ï¿½ï¿½ï¿½Ï¹ß¼ï¿½ ï¿½ï¿½ Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 	 */
 	private static void sendMail(String subject, String content, String toEmail, String fromEmail, String fromName, String charset, File[] attachFiles, Session session ,String[] bccEmails) throws UnsupportedEncodingException, MessagingException {
 		MimeMessage message = new MimeMessage(session);
@@ -393,7 +393,7 @@ public class EmailUtil {
 		message.setSubject(subject);
 		message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
 
-		 // BCC(¼ûÀº ÂüÁ¶) Ãß°¡
+		 // BCC(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) ï¿½ß°ï¿½
 	    if (bccEmails != null) {
 	        for (String bccEmail : bccEmails) {
 	            message.addRecipient(Message.RecipientType.BCC, new InternetAddress(bccEmail));
@@ -423,7 +423,7 @@ public class EmailUtil {
 	}
 
 	/**
-	 * ¸ÞÀÏÀÎÁõÀ» À§ÇÑ °´Ã¼
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 	 */
 	private static class MyAuthenticator extends Authenticator {
 		private String id;
@@ -435,8 +435,8 @@ public class EmailUtil {
 		}
 
 		@Override
-		protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
-			return new javax.mail.PasswordAuthentication(id, pw);
+		protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
+			return new jakarta.mail.PasswordAuthentication(id, pw);
 		}
 	}
 }
