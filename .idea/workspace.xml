@@ -3,6 +3,38 @@
   <component name="AIAssistantCustomInstructionsStorage">
     <option name="instructions">
       <map>
+        <entry key="AIAssistant.General.ProjectPrompt">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.General.ProjectPrompt" />
+              <option name="content" value="Please write Git commit messages in Korean, " />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
+        <entry key="AIAssistant.VCS.GenerateCommitMessage">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.VCS.GenerateCommitMessage" />
+              <option name="content" value="Please write Git commit messages in Korean, preferably 300 to 500 characters, with major changes and detailed explanations in separate paragraphs." />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
+        <entry key="AIAssistant.WriteDocumentation.Java">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.WriteDocumentation.Java" />
+              <option name="content" value="Please write Git commit messages in Korean, &#10;Do not return example code, do not use @author or @version or @since tags.&#10;DO NOT generate example usage.&#10;DO NOT generate usage example.&#10;DO NOT use html tags such as &lt;p&gt;, &lt;lu&gt;, &lt;li&gt;.&#10;DO NOT generate documentation for type member properties.&#10;Write Javadoc." />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
+        <entry key="AIAssistant.WriteDocumentation.JavaScript">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.WriteDocumentation.JavaScript" />
+              <option name="content" value="Please write Git commit messages in Korean, &#10;Do not return example code, do not use @author or @version or @since tags.&#10;DO NOT generate example usage.&#10;DO NOT generate usage example.&#10;DO NOT use html tags such as &lt;p&gt;, &lt;lu&gt;, &lt;li&gt;.&#10;DO NOT generate documentation for type member properties.&#10;Write JSDoc." />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
         <entry key="ij.vcs.review-buddy.summarize.short.github">
           <value>
             <AIAssistantStoredInstruction>
@@ -14,11 +46,22 @@
       </map>
     </option>
   </component>
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="framework2:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42a8d965-76c1-4354-9189-0d6ef5d81089" name="변경" comment="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications." />
+    <list default="true" id="42a8d965-76c1-4354-9189-0d6ef5d81089" name="변경" comment="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications.">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework2/src/framework/db/SQLCallableStatement.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/db/SQLCallableStatement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework2/src/framework/util/ExcelUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework2/src/framework/util/ExcelUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/framework2_jar/framework2.jar" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -112,9 +155,10 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "모듈",
+    "project.structure.last.edited": "프로젝트",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "ml.llm.AIAssistantPromptsLibrary",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
@@ -134,7 +178,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1779240825536</updated>
-      <workItem from="1779240826536" duration="2140000" />
+      <workItem from="1779240826536" duration="5161000" />
     </task>
     <task id="LOCAL-00002" summary="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications.">
       <option name="closed" value="true" />
@@ -144,7 +188,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779242961872</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications.">
+      <option name="closed" value="true" />
+      <created>1779242981935</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1779242981935</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -154,5 +206,9 @@
     <MESSAGE value="프로젝트 설정 파일 및 인코딩 설정 추가. Action 클래스 주석 오타 수정." />
     <MESSAGE value="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications." />
     <option name="LAST_COMMIT_MESSAGE" value="Update framework2 to migrate dependencies and improve compatibility.&#10;&#10;- Migrated from Ehcache to Caffeine for improved caching performance.&#10;- Updated Redis implementation to use Jedis Pool API for better resource management.&#10;- Replaced deprecated Apache Velocity with VelocityEngine.&#10;- Refactored HTTP utility classes to use CloseableHttpClient for better resource handling.&#10;- Upgraded dependencies and adjusted `.classpath` to ensure compatibility with Jakarta EE and Java 17+.&#10;- Added `log4j2.xml` configuration for enhanced logging capabilities.&#10;- Updated `web.xml` to align with Jakarta EE 6.0 specifications." />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

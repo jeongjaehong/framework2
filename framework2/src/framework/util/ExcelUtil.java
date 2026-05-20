@@ -36,6 +36,8 @@ import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -1381,8 +1383,7 @@ public class ExcelUtil {
 		if (header == null)
 			return;
 		for (int c = 0; c < header.length; c++) {
-			Cell cell = row.createCell(c);
-			cell.setCellType(Cell.CELL_TYPE_STRING);
+			Cell cell = row.createCell(c, CellType.STRING);
 			cell.setCellValue(header[c]);
 		}
 	}
@@ -1391,19 +1392,13 @@ public class ExcelUtil {
 		if (rs.getRowCount() == 0)
 			return;
 		for (int c = 0; c < colNms.length; c++) {
-			Cell cell = row.createCell(c);
 			Object value = rs.get(colNms[c]);
-			if (value == null) {
-				cell.setCellType(Cell.CELL_TYPE_STRING);
-				cell.setCellValue("");
+			if (value instanceof Number) {
+				Cell cell = row.createCell(c, CellType.NUMERIC);
+				cell.setCellValue(Double.valueOf(value.toString()));
 			} else {
-				if (value instanceof Number) {
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-					cell.setCellValue(Double.valueOf(value.toString()));
-				} else {
-					cell.setCellType(Cell.CELL_TYPE_STRING);
-					cell.setCellValue(value.toString());
-				}
+				Cell cell = row.createCell(c, CellType.STRING);
+				cell.setCellValue(value == null ? "" : value.toString());
 			}
 		}
 	}
@@ -1412,19 +1407,13 @@ public class ExcelUtil {
 		if (rs.getRow() == 0)
 			return;
 		for (int c = 0; c < colNms.length; c++) {
-			Cell cell = row.createCell(c);
 			Object value = rs.getObject(colNms[c]);
-			if (value == null) {
-				cell.setCellType(Cell.CELL_TYPE_STRING);
-				cell.setCellValue("");
+			if (value instanceof Number) {
+				Cell cell = row.createCell(c, CellType.NUMERIC);
+				cell.setCellValue(Double.valueOf(value.toString()));
 			} else {
-				if (value instanceof Number) {
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-					cell.setCellValue(Double.valueOf(value.toString()));
-				} else {
-					cell.setCellType(Cell.CELL_TYPE_STRING);
-					cell.setCellValue(value.toString());
-				}
+				Cell cell = row.createCell(c, CellType.STRING);
+				cell.setCellValue(value == null ? "" : value.toString());
 			}
 		}
 	}
@@ -1455,7 +1444,7 @@ public class ExcelUtil {
 	private static List<Map<String, String>> parseXLSX(InputStream is, String password) throws Exception {
 		POIFSFileSystem fs = new POIFSFileSystem(is);
 		EncryptionInfo info = new EncryptionInfo(fs);
-		Decryptor d = new Decryptor(info);
+		Decryptor d = Decryptor.getInstance(info);
 		d.verifyPassword(password);
 		XSSFWorkbook workbook = new XSSFWorkbook(d.getDataStream(fs));
 		return parseSheet(workbook.getSheetAt(0));
@@ -1521,21 +1510,23 @@ public class ExcelUtil {
 					Cell cell = row.getCell(j);
 					String item = "";
 					if (cell != null) {
+						DataFormatter formatter = new DataFormatter();
 						switch (cell.getCellType()) {
-						case Cell.CELL_TYPE_BOOLEAN:
-						case Cell.CELL_TYPE_FORMULA:
-						case Cell.CELL_TYPE_STRING:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							item = cell.getStringCellValue();
+						case BOOLEAN:
+						case FORMULA:
+						case STRING:
+							item = formatter.formatCellValue(cell);
 							break;
-						case Cell.CELL_TYPE_NUMERIC:
+						case NUMERIC:
 							if (DateUtil.isCellDateFormatted(cell)) {
 								Date date = cell.getDateCellValue();
 								item = dateFormat.format(date);
 							} else {
-								cell.setCellType(Cell.CELL_TYPE_STRING);
-								item = cell.getStringCellValue();
+								item = formatter.formatCellValue(cell);
 							}
+							break;
+						default:
+							item = "";
 							break;
 						}
 					}

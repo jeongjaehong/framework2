@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import oracle.jdbc.OracleTypes;
 
@@ -97,7 +97,7 @@ public class SQLCallableStatement extends DBStatement {
 			}
 
 			if (StringUtils.contains(dbmsName, "Oracle")) {
-				cstmt.registerOutParameter(getParamSize() + 1, OracleTypes.CURSOR); /* select °á°ú. */
+				cstmt.registerOutParameter(getParamSize() + 1, OracleTypes.CURSOR); /* select ï¿½ï¿½ï¿½. */
 				cstmt.registerOutParameter(getParamSize() + 2, OracleTypes.INTEGER);
 				cstmt.registerOutParameter(getParamSize() + 3, OracleTypes.VARCHAR);
 			} else {
@@ -201,8 +201,8 @@ public class SQLCallableStatement extends DBStatement {
 			if (null == cstmt.getObject(getParamSize() + 1)) {
 				_upCnt = -1;
 				_retCode = -1;
-				_retMessage = "Out parameter return code°¡ NULL °ªÀÔ´Ï´Ù.";
-				throw new SQLException("ErrorCode:-1 \nErrorMessage:Out parameter return code°¡ NULL °ªÀÔ´Ï´Ù.");
+				_retMessage = "Out parameter return codeï¿½ï¿½ NULL ï¿½ï¿½ï¿½Ô´Ï´ï¿½.";
+				throw new SQLException("ErrorCode:-1 \nErrorMessage:Out parameter return codeï¿½ï¿½ NULL ï¿½ï¿½ï¿½Ô´Ï´ï¿½.");
 			} else if (0 > (Integer) cstmt.getObject(getParamSize() + 1)) {
 				throw new SQLException("ErrorCode:" + (Integer) cstmt.getObject(getParamSize() + 1) + "\nErrorMessage:" + cstmt.getObject(getParamSize() + 2));
 			}
